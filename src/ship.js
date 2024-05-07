@@ -3,9 +3,10 @@ export default class Ship {
     this.length = length;
     this.hits = 0;
     this.sunk = false;
+    this.coordinates = [];
   }
 
-  hits() {
+  hit() {
     return this.hits++;
   }
 
