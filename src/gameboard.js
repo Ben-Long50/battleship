@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import Ship from './ship';
 
 export default class Gameboard {
@@ -8,6 +9,7 @@ export default class Gameboard {
       Array.from({ length: this.columns }),
     );
     this.shipList = [];
+    this.token = 'O';
     this.horizontal = true;
   }
 
@@ -25,11 +27,11 @@ export default class Gameboard {
           return 'You are trying to place the ship on an occupied coordinate';
         }
       }
-      if (row + length >= this.rows) {
+      if (column + length > this.columns) {
         return 'You are trying to place the ship out of bounds';
       }
       for (let i = 0; i < ship.length; i++) {
-        this.grid[row][column + i] = 'X';
+        this.grid[row][column + i] = this.token;
         ship.coordinates.push([row, column + i]);
       }
     } else if (this.horizontal === false) {
@@ -38,35 +40,41 @@ export default class Gameboard {
           return 'You are trying to place the ship on an occupied coordinate';
         }
       }
-      if (column + length >= this.columns) {
+      if (row + length > this.rows) {
         return 'You are trying to place the ship out of bounds';
       }
       for (let i = 0; i < ship.length; i++) {
-        this.grid[row + i][column] = 'X';
+        this.grid[row + i][column] = this.token;
         ship.coordinates.push([row + i, column]);
       }
     }
     this.shipList.push(ship);
+    return 'ship placed';
   }
 
   receiveAttack(row, column) {
-    this.grid[row][column] === 'X'
+    let message = 'You missed';
+    this.grid[row][column] === this.token
       ? (this.grid[row][column] = 'hit')
       : (this.grid[row][column] = 'miss');
     this.shipList.forEach((ship) => {
+      // eslint-disable-next-line no-restricted-syntax
       for (const coord of ship.coordinates) {
         if (coord[0] === row && coord[1] === column) {
           ship.hit();
+          message = 'You got a hit';
         }
       }
       if (ship.hits === ship.length) {
         ship.isSunk();
+        message = 'You sunk a ship';
       }
     });
+    return message;
   }
 
   checkFleet() {
-    shipsSunk = this.shipList.map((ship) => ship.sunk);
+    const shipsSunk = this.shipList.map((ship) => ship.sunk);
     if (shipsSunk.includes(false)) {
       return;
     }
