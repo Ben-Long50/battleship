@@ -19,8 +19,16 @@ export const gameFlow = {
     this.inactiveGameboard = activeGameboard;
   },
 
-  displayActiveBoard() {
+  displayBoards() {
     domElements.renderOpponent(this.inactivePlayer, this.inactiveGameboard);
+    domElements.activateCoords(this.inactivePlayer, this.inactiveGameboard);
     domElements.renderGameboard(this.activePlayer, this.activeGameboard);
+    domElements.toggleTurnButton();
+  },
+
+  switchScreen() {
+    domElements.renderBlankBoard(this.activeGameboard);
+    domElements.renderBlankBoard(this.inactiveGameboard);
+    domElements.toggleTurnButton(this.inactivePlayer.name);
   },
 };

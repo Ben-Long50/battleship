@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Ship from './ship';
+import { gameFlow } from './gameFlow';
 
 export default class Gameboard {
   constructor() {
@@ -9,6 +10,7 @@ export default class Gameboard {
       Array.from({ length: this.columns }),
     );
     this.shipList = [];
+    this.sunkShips = [];
     this.token = 'O';
     this.horizontal = true;
   }
@@ -62,7 +64,7 @@ export default class Gameboard {
       for (const coord of ship.coordinates) {
         if (coord[0] === row && coord[1] === column) {
           ship.hit();
-          message = 'You got a hit';
+          message = `${gameFlow.activePlayer.name} got a hit`;
         }
       }
       if (ship.hits === ship.length) {
@@ -73,11 +75,14 @@ export default class Gameboard {
     return message;
   }
 
-  checkFleet() {
-    const shipsSunk = this.shipList.map((ship) => ship.sunk);
-    if (shipsSunk.includes(false)) {
-      return;
-    }
-    return 'Game over! Your fleet has been sunk';
+  checkSunk() {
+    this.shipList.forEach((ship, index) => {
+      if (ship.sunk === true) {
+        const sunkShip = this.shipList.splice(index, 1);
+        this.sunkShips.push(sunkShip);
+      }
+    });
   }
+
+  checkFleet() {}
 }

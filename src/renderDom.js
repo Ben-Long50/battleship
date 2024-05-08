@@ -2,8 +2,8 @@
 export const domElements = {
   gameboardOne: document.querySelector('#gameboard-one'),
   gameboardTwo: document.querySelector('#gameboard-two'),
+  message: document.querySelector('#message-container'),
   turnButton: document.querySelector('#turn-button'),
-  footer: document.querySelector('footer'),
 
   renderGameboard(player, element) {
     this.clearGameboard(element);
@@ -39,7 +39,9 @@ export const domElements = {
         coordinate.classList.add('coordinate');
       });
     }
+  },
 
+  activateCoords(player, element) {
     const boardCoords = Array.from(element.querySelectorAll('.coordinate'));
 
     boardCoords.forEach((item) => {
@@ -49,10 +51,20 @@ export const domElements = {
           const row = index > 9 ? Math.floor(index / 10) : 0;
           const column = index % 10;
           const message = player.gameboard.receiveAttack(row, column);
-          this.footer.textContent = message;
+          player.gameboard.checkSunk();
+          this.message.textContent = message;
           this.renderOpponent(player, element);
         });
       }
+    });
+  },
+
+  renderBlankBoard(element) {
+    const boardCoords = element.querySelectorAll('.coordinate');
+    boardCoords.forEach((ele) => {
+      ele.classList.remove('ship');
+      ele.classList.remove('hit');
+      ele.classList.remove('miss');
     });
   },
 
@@ -60,5 +72,18 @@ export const domElements = {
     while (element.firstChild) {
       element.firstChild.remove();
     }
+  },
+
+  toggleTurnButton(player) {
+    this.turnButton.textContent === 'Switch Turn'
+      ? (() => {
+          this.turnButton.textContent = 'Begin Turn';
+          this.turnButton.classList.add('begin-button');
+          this.message.textContent = `${player}'s Turn`;
+        })()
+      : (() => {
+          this.turnButton.classList.remove('begin-button');
+          this.turnButton.textContent = 'Switch Turn';
+        })();
   },
 };

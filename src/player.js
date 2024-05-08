@@ -16,5 +16,6 @@ export class Human extends Player {
 export class Computer extends Player {
   constructor() {
     super();
+    this.name = 'Computer';
   }
 }

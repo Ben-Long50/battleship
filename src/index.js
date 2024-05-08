@@ -5,11 +5,15 @@ import { domElements } from './renderDom';
 import { gameFlow } from './gameFlow';
 
 const player1 = new Human('Ben');
-const player2 = new Computer();
+const player2 = new Human('Zach');
 
-domElements.turnButton.addEventListener('click', () => {
-  gameFlow.switchActive();
-  gameFlow.displayActiveBoard();
+domElements.turnButton.addEventListener('click', (e) => {
+  if (e.target.classList.length === 0) {
+    gameFlow.switchScreen();
+  } else {
+    gameFlow.switchActive();
+    gameFlow.displayBoards();
+  }
 });
 
 player1.gameboard.placeShip(2, 2, 3);
