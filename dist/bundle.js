@@ -13,13 +13,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   gameFlow: () => (/* binding */ gameFlow)
 /* harmony export */ });
 /* harmony import */ var _renderDom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./renderDom */ "./src/renderDom.js");
+/* harmony import */ var _player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./player */ "./src/player.js");
 /* eslint-disable import/prefer-default-export */
+
 
 var gameFlow = {
   activePlayer: undefined,
   activeGameboard: undefined,
   inactivePlayer: undefined,
   inactiveGameboard: undefined,
+  loadGame: function loadGame() {
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.startDialog.showModal();
+  },
+  initPvpMode: function initPvpMode() {
+    var _this = this;
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.startDialog.close();
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.pvpDialog.showModal();
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.startButton.addEventListener('click', function () {
+      _this.activePlayer = new _player__WEBPACK_IMPORTED_MODULE_1__.Human(_renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.player1Name.value);
+      _this.inactivePlayer = new _player__WEBPACK_IMPORTED_MODULE_1__.Human(_renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.player2Name.value);
+      console.log(_this.activePlayer, _this.inactivePlayer);
+    });
+  },
+  initPvcMode: function initPvcMode() {
+    var _this2 = this;
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.startDialog.close();
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.pvcDialog.showModal();
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.startButton.addEventListener('click', function () {
+      _this2.activePlayer = new _player__WEBPACK_IMPORTED_MODULE_1__.Human(_renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.player1Name.value);
+      _this2.inactivePlayer = new _player__WEBPACK_IMPORTED_MODULE_1__.Computer();
+      console.log(_this2.activePlayer, _this2.inactivePlayer);
+    });
+  },
   switchActive: function switchActive() {
     var activePlayer = this.activePlayer;
     var activeGameboard = this.activeGameboard;
@@ -37,8 +62,14 @@ var gameFlow = {
     _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.toggleTurnButton();
   },
   switchScreen: function switchScreen() {
-    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.clearGameboard(this.activeGameboard);
-    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.clearGameboard(this.inactiveGameboard);
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.renderBlankBoard(this.activeGameboard);
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.renderBlankBoard(this.inactiveGameboard);
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.toggleTurnButton(this.inactivePlayer.name);
+  },
+  endGame: function endGame() {
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.turnButton.textContent = 'Start a New Game';
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.turnButton.classList.add('new-game-button');
+    return "Game Over! ".concat(this.activePlayer.name, " has successfully sunk all of ").concat(this.inactivePlayer.name, "'s ships");
   }
 };
 
@@ -128,7 +159,7 @@ var Gameboard = /*#__PURE__*/function () {
   }, {
     key: "receiveAttack",
     value: function receiveAttack(row, column) {
-      var message = 'You missed';
+      var message = "".concat(_gameFlow__WEBPACK_IMPORTED_MODULE_1__.gameFlow.activePlayer.name, " missed");
       this.grid[row][column] === this.token ? this.grid[row][column] = 'hit' : this.grid[row][column] = 'miss';
       this.shipList.forEach(function (ship) {
         // eslint-disable-next-line no-restricted-syntax
@@ -149,7 +180,7 @@ var Gameboard = /*#__PURE__*/function () {
         }
         if (ship.hits === ship.length) {
           ship.isSunk();
-          message = 'You sunk a ship';
+          message = "".concat(_gameFlow__WEBPACK_IMPORTED_MODULE_1__.gameFlow.activePlayer.name, " sunk a ship");
         }
       });
       return message;
@@ -167,7 +198,11 @@ var Gameboard = /*#__PURE__*/function () {
     }
   }, {
     key: "checkFleet",
-    value: function checkFleet() {}
+    value: function checkFleet() {
+      if (this.shipList.length === 0) {
+        return true;
+      }
+    }
   }]);
   return Gameboard;
 }();
@@ -241,8 +276,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   domElements: () => (/* binding */ domElements)
 /* harmony export */ });
+/* harmony import */ var _gameFlow__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameFlow */ "./src/gameFlow.js");
+
+
 /* eslint-disable import/prefer-default-export */
 var domElements = {
+  startDialog: document.querySelector('#start-dialog'),
+  pvpMode: document.querySelector('#pvp-mode'),
+  pvcMode: document.querySelector('#pvc-mode'),
+  pvpDialog: document.querySelector('#pvp-dialog'),
+  pvcDialog: document.querySelector('#pvc-dialog'),
+  player1Name: document.querySelector('#player1-name'),
+  player2Name: document.querySelector('#player2-name'),
+  pvpStartButton: document.querySelectorAll('#pvp-start-button'),
+  pvcStartButton: document.querySelectorAll('#pvc-start-button'),
   gameboardOne: document.querySelector('#gameboard-one'),
   gameboardTwo: document.querySelector('#gameboard-two'),
   message: document.querySelector('#message-container'),
@@ -294,8 +341,19 @@ var domElements = {
           player.gameboard.checkSunk();
           _this.message.textContent = message;
           _this.renderOpponent(player, element);
+          if (player.gameboard.checkFleet() === true) {
+            _this.message.textContent = _gameFlow__WEBPACK_IMPORTED_MODULE_0__.gameFlow.endGame();
+          }
         });
       }
+    });
+  },
+  renderBlankBoard: function renderBlankBoard(element) {
+    var boardCoords = element.querySelectorAll('.coordinate');
+    boardCoords.forEach(function (ele) {
+      ele.classList.remove('ship');
+      ele.classList.remove('hit');
+      ele.classList.remove('miss');
     });
   },
   clearGameboard: function clearGameboard(element) {
@@ -303,15 +361,16 @@ var domElements = {
       element.firstChild.remove();
     }
   },
-  toggleTurnButton: function toggleTurnButton() {
+  toggleTurnButton: function toggleTurnButton(player) {
     var _this2 = this;
     this.turnButton.textContent === 'Switch Turn' ? function () {
       _this2.turnButton.textContent = 'Begin Turn';
       _this2.turnButton.classList.add('begin-button');
-    } : function () {
+      _this2.message.textContent = "".concat(player, "'s Turn");
+    }() : function () {
       _this2.turnButton.classList.remove('begin-button');
       _this2.turnButton.textContent = 'Switch Turn';
-    };
+    }();
   }
 };
 
@@ -396,6 +455,36 @@ footer {
   align-items: center;
 }
 
+dialog {
+  border-radius: 10px;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+}
+
+.dialog-button-container {
+  display: flex;
+  justify-content: center;
+  gap: 5%;
+}
+
+.mode-button {
+  font-size: 24px;
+  border-radius: 5px;
+}
+
+#single-input-container {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+#dual-input-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
 #title {
   font-size: 100px;
   text-align: center;
@@ -448,7 +537,7 @@ footer {
 .miss {
   background-color: rgb(133, 133, 255);
 }
-`, "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,aAAa;EACb,sBAAsB;EACtB,8BAA8B;AAChC;;AAEA;;EAEE,WAAW;EACX,aAAa;EACb,uBAAuB;EACvB,mBAAmB;AACrB;;AAEA;EACE,gBAAgB;EAChB,kBAAkB;AACpB;;AAEA;EACE,aAAa;EACb,uBAAuB;EACvB,mBAAmB;AACrB;;AAEA;EACE,YAAY;EACZ,UAAU;EACV,aAAa;EACb,sBAAsB;EACtB,6BAA6B;EAC7B,mBAAmB;AACrB;;AAEA;EACE,kBAAkB;EAClB,eAAe;AACjB;;AAEA;EACE,aAAa;EACb,sCAAsC;EACtC,QAAQ;AACV;;AAEA;EACE,YAAY;EACZ,WAAW;EACX,uBAAuB;EACvB,aAAa;EACb,mBAAmB;EACnB,eAAe;EACf,kBAAkB;AACpB;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC","sourcesContent":["body {\n  height: 100vh;\n  width: 100vw;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\nheader,\nfooter {\n  width: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n#title {\n  font-size: 100px;\n  text-align: center;\n}\n\n#gameboard-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n#ui-container {\n  height: 100%;\n  width: 20%;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-evenly;\n  align-items: center;\n}\n\n#message-container {\n  text-align: center;\n  font-size: 24px;\n}\n\n.gameboard {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  gap: 1px;\n}\n\n.coordinate {\n  height: 50px;\n  width: 50px;\n  border: solid black 2px;\n  display: grid;\n  place-items: center;\n  font-size: 30px;\n  border-radius: 5px;\n}\n\n.ship {\n  background-color: rgb(113, 197, 113);\n}\n\n.hit {\n  background-color: rgb(255, 129, 129);\n}\n\n.miss {\n  background-color: rgb(133, 133, 255);\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,aAAa;EACb,sBAAsB;EACtB,8BAA8B;AAChC;;AAEA;;EAEE,WAAW;EACX,aAAa;EACb,uBAAuB;EACvB,mBAAmB;AACrB;;AAEA;EACE,mBAAmB;AACrB;;AAEA;EACE,oCAAoC;EACpC,2BAA2B;AAC7B;;AAEA;EACE,aAAa;EACb,uBAAuB;EACvB,OAAO;AACT;;AAEA;EACE,eAAe;EACf,kBAAkB;AACpB;;AAEA;EACE,aAAa;EACb,qCAAqC;AACvC;;AAEA;EACE,aAAa;EACb,qCAAqC;AACvC;;AAEA;EACE,gBAAgB;EAChB,kBAAkB;AACpB;;AAEA;EACE,aAAa;EACb,uBAAuB;EACvB,mBAAmB;AACrB;;AAEA;EACE,YAAY;EACZ,UAAU;EACV,aAAa;EACb,sBAAsB;EACtB,6BAA6B;EAC7B,mBAAmB;AACrB;;AAEA;EACE,kBAAkB;EAClB,eAAe;AACjB;;AAEA;EACE,aAAa;EACb,sCAAsC;EACtC,QAAQ;AACV;;AAEA;EACE,YAAY;EACZ,WAAW;EACX,uBAAuB;EACvB,aAAa;EACb,mBAAmB;EACnB,eAAe;EACf,kBAAkB;AACpB;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC","sourcesContent":["body {\n  height: 100vh;\n  width: 100vw;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\nheader,\nfooter {\n  width: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\ndialog {\n  border-radius: 10px;\n}\n\ndialog::backdrop {\n  background-color: rgba(0, 0, 0, 0.7);\n  backdrop-filter: blur(12px);\n}\n\n.dialog-button-container {\n  display: flex;\n  justify-content: center;\n  gap: 5%;\n}\n\n.mode-button {\n  font-size: 24px;\n  border-radius: 5px;\n}\n\n#single-input-container {\n  display: grid;\n  grid-template-columns: repeat(1, 1fr);\n}\n\n#dual-input-container {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n}\n\n#title {\n  font-size: 100px;\n  text-align: center;\n}\n\n#gameboard-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n#ui-container {\n  height: 100%;\n  width: 20%;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-evenly;\n  align-items: center;\n}\n\n#message-container {\n  text-align: center;\n  font-size: 24px;\n}\n\n.gameboard {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  gap: 1px;\n}\n\n.coordinate {\n  height: 50px;\n  width: 50px;\n  border: solid black 2px;\n  display: grid;\n  place-items: center;\n  font-size: 30px;\n  border-radius: 5px;\n}\n\n.ship {\n  background-color: rgb(113, 197, 113);\n}\n\n.hit {\n  background-color: rgb(255, 129, 129);\n}\n\n.miss {\n  background-color: rgb(133, 133, 255);\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1194,15 +1283,23 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+_gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.loadGame();
 var player1 = new _player__WEBPACK_IMPORTED_MODULE_2__.Human('Ben');
 var player2 = new _player__WEBPACK_IMPORTED_MODULE_2__.Human('Zach');
-_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.turnButton.addEventListener('click', function () {
-  if (!_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.turnButton.classList.contains('begin-button')) {
+_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.pvpMode.addEventListener('click', function () {
+  _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.initPvpMode();
+});
+_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.pvcMode.addEventListener('click', function () {
+  _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.initPvcMode();
+});
+_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.turnButton.addEventListener('click', function (e) {
+  if (e.target.classList.length === 0) {
     _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.switchScreen();
-  }
-  if (_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.turnButton.classList.contains('begin-button')) {
+  } else if (e.target.classList.contains('begin-button')) {
     _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.switchActive();
     _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.displayBoards();
+  } else if (e.target.classList.contains('new-game-button')) {
+    _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.startGame();
   }
 });
 player1.gameboard.placeShip(2, 2, 3);
@@ -1213,11 +1310,11 @@ player1.gameboard.placeShip(3, 7, 2);
 player1.gameboard.placeShip(4, 4, 5);
 _renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.renderGameboard(player1, _renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.gameboardOne);
 player2.gameboard.placeShip(2, 9, 8);
-player2.gameboard.placeShip(3, 3, 6);
-player2.gameboard.placeShip(5, 0, 1);
-player2.gameboard.toggleOrientation();
-player2.gameboard.placeShip(3, 7, 2);
-player2.gameboard.placeShip(4, 6, 3);
+// player2.gameboard.placeShip(3, 3, 6);
+// player2.gameboard.placeShip(5, 0, 1);
+// player2.gameboard.toggleOrientation();
+// player2.gameboard.placeShip(3, 7, 2);
+// player2.gameboard.placeShip(4, 6, 3);
 _renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.renderGameboard(player2, _renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.gameboardTwo);
 _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.activePlayer = player1;
 _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.activeGameboard = _renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.gameboardOne;

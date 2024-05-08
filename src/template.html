@@ -6,6 +6,32 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
+    <dialog id="start-dialog">
+      <div class="dialog-button-container">
+        <button id="pvp-mode" class="mode-button">Player vs. Player</button>
+        <button id="pvc-mode" class="mode-button">Player vs. Computer</button>
+      </div>
+    </dialog>
+    <dialog id="pvp-dialog">
+      <div id="dual-input-container">
+        <label for="player1-name">Player 1 Name</label>
+        <label for="player2-name">Player 2 Name</label>
+        <input type="text" id="player1-name" />
+        <input type="text" id="player2-name" />
+      </div>
+      <div class="dialog-button-container">
+        <button id="pvp-start-button">Start Game</button>
+      </div>
+    </dialog>
+    <dialog id="pvc-dialog">
+      <div id="single-input-container">
+        <label for="player1-name">Your Name</label>
+        <input type="text" id="player1-name" />
+      </div>
+      <div class="dialog-button-container">
+        <button id="pvc-start-button">Start Game</button>
+      </div>
+    </dialog>
     <header>
       <h1 id="title">BATTLESHIP</h1>
     </header>
@@ -16,6 +42,10 @@
         <button id="turn-button" class="begin-button">Begin Turn</button>
       </div>
       <div id="gameboard-two" class="gameboard"></div>
+    </div>
+    <div id="ship-info-container">
+      <div id="player1-ship-info" class="ship-info"></div>
+      <div id="player2-ship-info" class="ship-info"></div>
     </div>
     <footer></footer>
   </body>

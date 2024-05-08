@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { domElements } from './renderDom';
+import { Human, Computer } from './player';
 
 export const gameFlow = {
   activePlayer: undefined,
@@ -7,7 +8,38 @@ export const gameFlow = {
   inactivePlayer: undefined,
   inactiveGameboard: undefined,
 
-  startGame() {},
+  loadGame() {
+    domElements.startDialog.showModal();
+  },
+
+  initPvpMode() {
+    domElements.startDialog.close();
+    domElements.pvpDialog.showModal();
+    domElements.pvpStartButton.addEventListener('click', () => {
+      this.activePlayer = new Human(domElements.player1Name.value);
+      this.activeGameboard = domElements.gameboardOne;
+      this.inactivePlayer = new Human(domElements.player2Name.value);
+      this.inactiveGameboard = domElements.gameboardTwo;
+      domElements.pvpDialog.close();
+      domElements.renderGameboard(this.activePlayer, this.activeGameboard);
+      domElements.renderGameboard(this.inactivePlayer, this.inactiveGameboard);
+      domElements.renderShips(domElements.player1Ships);
+    });
+  },
+
+  initPvcMode() {
+    domElements.startDialog.close();
+    domElements.pvcDialog.showModal();
+    domElements.pvcStartButton.addEventListener('click', () => {
+      this.activePlayer = new Human(domElements.player1Name.value);
+      this.activeGameboard = domElements.gameboardOne;
+      this.inactivePlayer = new Computer();
+      this.inactiveGameboard = domElements.gameboardTwo;
+      domElements.pvcDialog.close();
+      domElements.renderGameboard(this.activePlayer, this.activeGameboard);
+      domElements.renderGameboard(this.inactivePlayer, this.inactiveGameboard);
+    });
+  },
 
   switchActive() {
     const { activePlayer } = this;

@@ -2,10 +2,40 @@ import { gameFlow } from './gameFlow';
 
 /* eslint-disable import/prefer-default-export */
 export const domElements = {
+  startDialog: document.querySelector('#start-dialog'),
+  pvpMode: document.querySelector('#pvp-mode'),
+  pvcMode: document.querySelector('#pvc-mode'),
+  pvpDialog: document.querySelector('#pvp-dialog'),
+  pvcDialog: document.querySelector('#pvc-dialog'),
+  player1Name: document.querySelector('#player1-name'),
+  player2Name: document.querySelector('#player2-name'),
+  pvpStartButton: document.querySelector('#pvp-start-button'),
+  pvcStartButton: document.querySelector('#pvc-start-button'),
+  player1Ships: document.querySelector('#player1-ship-info'),
+  player2Ships: document.querySelector('#player2-ship-info'),
   gameboardOne: document.querySelector('#gameboard-one'),
   gameboardTwo: document.querySelector('#gameboard-two'),
   message: document.querySelector('#message-container'),
   turnButton: document.querySelector('#turn-button'),
+
+  renderShip(element, length) {
+    const ship = document.createElement('div');
+    ship.classList.add('ship-display');
+    element.appendChild(ship);
+    for (let i = 0; i < length; i++) {
+      const shipUnit = document.createElement('div');
+      shipUnit.classList.add('ship-unit');
+      ship.appendChild(shipUnit);
+    }
+  },
+
+  renderShips(element) {
+    this.renderShip(element, 5);
+    this.renderShip(element, 4);
+    this.renderShip(element, 3);
+    this.renderShip(element, 3);
+    this.renderShip(element, 2);
+  },
 
   renderGameboard(player, element) {
     this.clearGameboard(element);
