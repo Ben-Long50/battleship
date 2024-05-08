@@ -2,6 +2,326 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/gameFlow.js":
+/*!*************************!*\
+  !*** ./src/gameFlow.js ***!
+  \*************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   gameFlow: () => (/* binding */ gameFlow)
+/* harmony export */ });
+/* harmony import */ var _renderDom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./renderDom */ "./src/renderDom.js");
+/* eslint-disable import/prefer-default-export */
+
+var gameFlow = {
+  activePlayer: undefined,
+  activeGameboard: undefined,
+  inactivePlayer: undefined,
+  inactiveGameboard: undefined,
+  switchActive: function switchActive() {
+    var activePlayer = this.activePlayer;
+    var activeGameboard = this.activeGameboard;
+    var inactivePlayer = this.inactivePlayer;
+    var inactiveGameboard = this.inactiveGameboard;
+    this.activePlayer = inactivePlayer;
+    this.activeGameboard = inactiveGameboard;
+    this.inactivePlayer = activePlayer;
+    this.inactiveGameboard = activeGameboard;
+  },
+  displayActiveBoard: function displayActiveBoard() {
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.renderOpponent(this.inactivePlayer, this.inactiveGameboard);
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.renderGameboard(this.activePlayer, this.activeGameboard);
+  }
+};
+
+/***/ }),
+
+/***/ "./src/gameboard.js":
+/*!**************************!*\
+  !*** ./src/gameboard.js ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Gameboard)
+/* harmony export */ });
+/* harmony import */ var _ship__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ship */ "./src/ship.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+var Gameboard = /*#__PURE__*/function () {
+  function Gameboard() {
+    var _this = this;
+    _classCallCheck(this, Gameboard);
+    this.rows = 10;
+    this.columns = 10;
+    this.grid = Array.from({
+      length: this.rows
+    }, function () {
+      return Array.from({
+        length: _this.columns
+      });
+    });
+    this.shipList = [];
+    this.token = 'O';
+    this.horizontal = true;
+  }
+  _createClass(Gameboard, [{
+    key: "toggleOrientation",
+    value: function toggleOrientation() {
+      this.horizontal === true ? this.horizontal = false : this.horizontal = true;
+    }
+  }, {
+    key: "placeShip",
+    value: function placeShip(length, row, column) {
+      var ship = new _ship__WEBPACK_IMPORTED_MODULE_0__["default"](length);
+      if (this.horizontal === true) {
+        for (var i = 0; i < ship.length; i++) {
+          if (this.grid[row][column + i] !== undefined) {
+            return 'You are trying to place the ship on an occupied coordinate';
+          }
+        }
+        if (column + length > this.columns) {
+          return 'You are trying to place the ship out of bounds';
+        }
+        for (var _i = 0; _i < ship.length; _i++) {
+          this.grid[row][column + _i] = this.token;
+          ship.coordinates.push([row, column + _i]);
+        }
+      } else if (this.horizontal === false) {
+        for (var _i2 = 0; _i2 < ship.length; _i2++) {
+          if (this.grid[row + _i2][column] !== undefined) {
+            return 'You are trying to place the ship on an occupied coordinate';
+          }
+        }
+        if (row + length > this.rows) {
+          return 'You are trying to place the ship out of bounds';
+        }
+        for (var _i3 = 0; _i3 < ship.length; _i3++) {
+          this.grid[row + _i3][column] = this.token;
+          ship.coordinates.push([row + _i3, column]);
+        }
+      }
+      this.shipList.push(ship);
+      return 'ship placed';
+    }
+  }, {
+    key: "receiveAttack",
+    value: function receiveAttack(row, column) {
+      this.grid[row][column] === this.token ? this.grid[row][column] = 'hit' : this.grid[row][column] = 'miss';
+      this.shipList.forEach(function (ship) {
+        var _iterator = _createForOfIteratorHelper(ship.coordinates),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var coord = _step.value;
+            if (coord[0] === row && coord[1] === column) {
+              ship.hit();
+            }
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+        if (ship.hits === ship.length) {
+          ship.isSunk();
+        }
+      });
+    }
+  }, {
+    key: "checkFleet",
+    value: function checkFleet() {
+      var shipsSunk = this.shipList.map(function (ship) {
+        return ship.sunk;
+      });
+      if (shipsSunk.includes(false)) {
+        return;
+      }
+      return 'Game over! Your fleet has been sunk';
+    }
+  }]);
+  return Gameboard;
+}();
+
+
+/***/ }),
+
+/***/ "./src/player.js":
+/*!***********************!*\
+  !*** ./src/player.js ***!
+  \***********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Computer: () => (/* binding */ Computer),
+/* harmony export */   Human: () => (/* binding */ Human)
+/* harmony export */ });
+/* harmony import */ var _gameboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameboard */ "./src/gameboard.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* eslint-disable max-classes-per-file */
+
+var Player = /*#__PURE__*/_createClass(function Player() {
+  _classCallCheck(this, Player);
+  this.gameboard = new _gameboard__WEBPACK_IMPORTED_MODULE_0__["default"]();
+});
+var Human = /*#__PURE__*/function (_Player) {
+  _inherits(Human, _Player);
+  function Human(name) {
+    var _this;
+    _classCallCheck(this, Human);
+    _this = _callSuper(this, Human);
+    _this.name = name;
+    return _this;
+  }
+  return _createClass(Human);
+}(Player);
+var Computer = /*#__PURE__*/function (_Player2) {
+  _inherits(Computer, _Player2);
+  function Computer() {
+    _classCallCheck(this, Computer);
+    return _callSuper(this, Computer);
+  }
+  return _createClass(Computer);
+}(Player);
+
+/***/ }),
+
+/***/ "./src/renderDom.js":
+/*!**************************!*\
+  !*** ./src/renderDom.js ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   domElements: () => (/* binding */ domElements)
+/* harmony export */ });
+/* eslint-disable import/prefer-default-export */
+var domElements = {
+  gameboardOne: document.querySelector('#gameboard-one'),
+  gameboardTwo: document.querySelector('#gameboard-two'),
+  renderGameboard: function renderGameboard(player, element) {
+    this.clearGameboard(element);
+    var boardArray = player.gameboard.grid;
+    for (var i = 0; i < boardArray.length; i++) {
+      boardArray[i].forEach(function (index) {
+        var coordinate = document.createElement('div');
+        element.appendChild(coordinate);
+        if (index === player.gameboard.token) {
+          coordinate.classList.add('ship');
+        } else if (index === 'hit') {
+          coordinate.classList.add('hit');
+        } else if (index === 'miss') {
+          coordinate.classList.add('miss');
+        }
+        coordinate.classList.add('coordinate');
+      });
+    }
+  },
+  renderOpponent: function renderOpponent(player, element) {
+    var _this = this;
+    this.clearGameboard(element);
+    var boardArray = player.gameboard.grid;
+    for (var i = 0; i < boardArray.length; i++) {
+      boardArray[i].forEach(function (index) {
+        var coordinate = document.createElement('div');
+        element.appendChild(coordinate);
+        if (index === 'hit') {
+          coordinate.classList.add('hit');
+        } else if (index === 'miss') {
+          coordinate.classList.add('miss');
+        }
+        coordinate.classList.add('coordinate');
+      });
+    }
+    var boardCoords = Array.from(element.querySelectorAll('.coordinate'));
+    boardCoords.forEach(function (item) {
+      item.addEventListener('click', function (e) {
+        var index = boardCoords.indexOf(e.target);
+        var row = index > 9 ? Math.floor(index / 10) : 0;
+        var column = index % 10;
+        player.gameboard.receiveAttack(row, column);
+        _this.renderOpponent(player, element);
+      });
+    });
+  },
+  clearGameboard: function clearGameboard(element) {
+    while (element.firstChild) {
+      element.firstChild.remove();
+    }
+  }
+};
+
+/***/ }),
+
+/***/ "./src/ship.js":
+/*!*********************!*\
+  !*** ./src/ship.js ***!
+  \*********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Ship)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var Ship = /*#__PURE__*/function () {
+  function Ship(length) {
+    _classCallCheck(this, Ship);
+    this.length = length;
+    this.hits = 0;
+    this.sunk = false;
+    this.coordinates = [];
+  }
+  _createClass(Ship, [{
+    key: "hit",
+    value: function hit() {
+      return this.hits++;
+    }
+  }, {
+    key: "isSunk",
+    value: function isSunk() {
+      if (this.length === this.hits) {
+        this.sunk = true;
+      }
+      return this.sunk;
+    }
+  }]);
+  return Ship;
+}();
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js!./src/styles/main.css":
 /*!*******************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./src/styles/main.css ***!
@@ -21,7 +341,60 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ``, "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, `body {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+header,
+footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#title {
+  font-size: 100px;
+  text-align: center;
+}
+
+#gameboard-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.gameboard {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+}
+
+.coordinate {
+  height: 50px;
+  width: 50px;
+  border: solid black 2px;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+}
+
+.ship {
+  background-color: rgb(113, 197, 113);
+}
+
+.hit {
+  background-color: rgb(255, 129, 129);
+}
+
+.miss {
+  background-color: rgb(133, 133, 255);
+}
+`, "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,aAAa;EACb,sBAAsB;EACtB,8BAA8B;AAChC;;AAEA;;EAEE,WAAW;EACX,aAAa;EACb,uBAAuB;EACvB,mBAAmB;AACrB;;AAEA;EACE,gBAAgB;EAChB,kBAAkB;AACpB;;AAEA;EACE,aAAa;EACb,6BAA6B;EAC7B,mBAAmB;AACrB;;AAEA;EACE,aAAa;EACb,sCAAsC;EACtC,QAAQ;AACV;;AAEA;EACE,YAAY;EACZ,WAAW;EACX,uBAAuB;EACvB,aAAa;EACb,mBAAmB;EACnB,eAAe;AACjB;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC","sourcesContent":["body {\n  height: 100vh;\n  width: 100vw;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\nheader,\nfooter {\n  width: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n#title {\n  font-size: 100px;\n  text-align: center;\n}\n\n#gameboard-container {\n  display: flex;\n  justify-content: space-around;\n  align-items: center;\n}\n\n.gameboard {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  gap: 2px;\n}\n\n.coordinate {\n  height: 50px;\n  width: 50px;\n  border: solid black 2px;\n  display: grid;\n  place-items: center;\n  font-size: 30px;\n}\n\n.ship {\n  background-color: rgb(113, 197, 113);\n}\n\n.hit {\n  background-color: rgb(255, 129, 129);\n}\n\n.miss {\n  background-color: rgb(133, 133, 255);\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -759,8 +1132,37 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _styles_main_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./styles/main.css */ "./src/styles/main.css");
 /* harmony import */ var _styles_reset_css_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles/reset-css.css */ "./src/styles/reset-css.css");
+/* harmony import */ var _player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./player */ "./src/player.js");
+/* harmony import */ var _renderDom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./renderDom */ "./src/renderDom.js");
+/* harmony import */ var _gameFlow__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./gameFlow */ "./src/gameFlow.js");
 
 
+
+
+
+var player1 = new _player__WEBPACK_IMPORTED_MODULE_2__.Human('Ben');
+var player2 = new _player__WEBPACK_IMPORTED_MODULE_2__.Computer();
+player1.gameboard.placeShip(2, 2, 3);
+player1.gameboard.placeShip(3, 3, 3);
+player1.gameboard.placeShip(5, 0, 1);
+player1.gameboard.toggleOrientation();
+player1.gameboard.placeShip(3, 7, 2);
+player1.gameboard.placeShip(4, 4, 5);
+_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.renderGameboard(player1, _renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.gameboardOne);
+player2.gameboard.placeShip(2, 9, 8);
+player2.gameboard.placeShip(3, 3, 6);
+player2.gameboard.placeShip(5, 0, 1);
+player2.gameboard.toggleOrientation();
+player2.gameboard.placeShip(3, 7, 2);
+player2.gameboard.placeShip(4, 6, 3);
+_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.renderGameboard(player2, _renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.gameboardTwo);
+_gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.activePlayer = player1;
+_gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.activeGameboard = _renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.gameboardOne;
+_gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.inactivePlayer = player2;
+_gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.inactiveGameboard = _renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.gameboardTwo;
+_gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.displayActiveBoard();
+// gameFlow.switchActive();
+// gameFlow.displayActiveBoard();
 })();
 
 /******/ })()
