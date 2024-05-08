@@ -7,6 +7,8 @@ export const gameFlow = {
   inactivePlayer: undefined,
   inactiveGameboard: undefined,
 
+  startGame() {},
+
   switchActive() {
     const { activePlayer } = this;
     const { activeGameboard } = this;
@@ -30,5 +32,11 @@ export const gameFlow = {
     domElements.renderBlankBoard(this.activeGameboard);
     domElements.renderBlankBoard(this.inactiveGameboard);
     domElements.toggleTurnButton(this.inactivePlayer.name);
+  },
+
+  endGame() {
+    domElements.turnButton.textContent = 'Start a New Game';
+    domElements.turnButton.classList.add('new-game-button');
+    return `Game Over! ${this.activePlayer.name} has successfully sunk all of ${this.inactivePlayer.name}'s ships`;
   },
 };

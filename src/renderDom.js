@@ -1,3 +1,5 @@
+import { gameFlow } from './gameFlow';
+
 /* eslint-disable import/prefer-default-export */
 export const domElements = {
   gameboardOne: document.querySelector('#gameboard-one'),
@@ -54,6 +56,9 @@ export const domElements = {
           player.gameboard.checkSunk();
           this.message.textContent = message;
           this.renderOpponent(player, element);
+          if (player.gameboard.checkFleet() === true) {
+            this.message.textContent = gameFlow.endGame();
+          }
         });
       }
     });

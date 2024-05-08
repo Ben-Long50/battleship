@@ -55,7 +55,7 @@ export default class Gameboard {
   }
 
   receiveAttack(row, column) {
-    let message = 'You missed';
+    let message = `${gameFlow.activePlayer.name} missed`;
     this.grid[row][column] === this.token
       ? (this.grid[row][column] = 'hit')
       : (this.grid[row][column] = 'miss');
@@ -69,7 +69,7 @@ export default class Gameboard {
       }
       if (ship.hits === ship.length) {
         ship.isSunk();
-        message = 'You sunk a ship';
+        message = `${gameFlow.activePlayer.name} sunk a ship`;
       }
     });
     return message;
@@ -84,5 +84,9 @@ export default class Gameboard {
     });
   }
 
-  checkFleet() {}
+  checkFleet() {
+    if (this.shipList.length === 0) {
+      return true;
+    }
+  }
 }
