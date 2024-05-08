@@ -30,9 +30,15 @@ var gameFlow = {
     this.inactivePlayer = activePlayer;
     this.inactiveGameboard = activeGameboard;
   },
-  displayActiveBoard: function displayActiveBoard() {
+  displayBoards: function displayBoards() {
     _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.renderOpponent(this.inactivePlayer, this.inactiveGameboard);
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.activateCoords(this.inactivePlayer, this.inactiveGameboard);
     _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.renderGameboard(this.activePlayer, this.activeGameboard);
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.toggleTurnButton();
+  },
+  switchScreen: function switchScreen() {
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.clearGameboard(this.activeGameboard);
+    _renderDom__WEBPACK_IMPORTED_MODULE_0__.domElements.clearGameboard(this.inactiveGameboard);
   }
 };
 
@@ -49,6 +55,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Gameboard)
 /* harmony export */ });
 /* harmony import */ var _ship__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ship */ "./src/ship.js");
+/* harmony import */ var _gameFlow__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gameFlow */ "./src/gameFlow.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -58,6 +65,8 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/* eslint-disable no-unused-expressions */
+
 
 var Gameboard = /*#__PURE__*/function () {
   function Gameboard() {
@@ -73,6 +82,7 @@ var Gameboard = /*#__PURE__*/function () {
       });
     });
     this.shipList = [];
+    this.sunkShips = [];
     this.token = 'O';
     this.horizontal = true;
   }
@@ -118,8 +128,10 @@ var Gameboard = /*#__PURE__*/function () {
   }, {
     key: "receiveAttack",
     value: function receiveAttack(row, column) {
+      var message = 'You missed';
       this.grid[row][column] === this.token ? this.grid[row][column] = 'hit' : this.grid[row][column] = 'miss';
       this.shipList.forEach(function (ship) {
+        // eslint-disable-next-line no-restricted-syntax
         var _iterator = _createForOfIteratorHelper(ship.coordinates),
           _step;
         try {
@@ -127,6 +139,7 @@ var Gameboard = /*#__PURE__*/function () {
             var coord = _step.value;
             if (coord[0] === row && coord[1] === column) {
               ship.hit();
+              message = "".concat(_gameFlow__WEBPACK_IMPORTED_MODULE_1__.gameFlow.activePlayer.name, " got a hit");
             }
           }
         } catch (err) {
@@ -136,20 +149,25 @@ var Gameboard = /*#__PURE__*/function () {
         }
         if (ship.hits === ship.length) {
           ship.isSunk();
+          message = 'You sunk a ship';
+        }
+      });
+      return message;
+    }
+  }, {
+    key: "checkSunk",
+    value: function checkSunk() {
+      var _this2 = this;
+      this.shipList.forEach(function (ship, index) {
+        if (ship.sunk === true) {
+          var sunkShip = _this2.shipList.splice(index, 1);
+          _this2.sunkShips.push(sunkShip);
         }
       });
     }
   }, {
     key: "checkFleet",
-    value: function checkFleet() {
-      var shipsSunk = this.shipList.map(function (ship) {
-        return ship.sunk;
-      });
-      if (shipsSunk.includes(false)) {
-        return;
-      }
-      return 'Game over! Your fleet has been sunk';
-    }
+    value: function checkFleet() {}
   }]);
   return Gameboard;
 }();
@@ -202,8 +220,11 @@ var Human = /*#__PURE__*/function (_Player) {
 var Computer = /*#__PURE__*/function (_Player2) {
   _inherits(Computer, _Player2);
   function Computer() {
+    var _this2;
     _classCallCheck(this, Computer);
-    return _callSuper(this, Computer);
+    _this2 = _callSuper(this, Computer);
+    _this2.name = 'Computer';
+    return _this2;
   }
   return _createClass(Computer);
 }(Player);
@@ -224,6 +245,8 @@ __webpack_require__.r(__webpack_exports__);
 var domElements = {
   gameboardOne: document.querySelector('#gameboard-one'),
   gameboardTwo: document.querySelector('#gameboard-two'),
+  message: document.querySelector('#message-container'),
+  turnButton: document.querySelector('#turn-button'),
   renderGameboard: function renderGameboard(player, element) {
     this.clearGameboard(element);
     var boardArray = player.gameboard.grid;
@@ -243,7 +266,6 @@ var domElements = {
     }
   },
   renderOpponent: function renderOpponent(player, element) {
-    var _this = this;
     this.clearGameboard(element);
     var boardArray = player.gameboard.grid;
     for (var i = 0; i < boardArray.length; i++) {
@@ -258,21 +280,38 @@ var domElements = {
         coordinate.classList.add('coordinate');
       });
     }
+  },
+  activateCoords: function activateCoords(player, element) {
+    var _this = this;
     var boardCoords = Array.from(element.querySelectorAll('.coordinate'));
     boardCoords.forEach(function (item) {
-      item.addEventListener('click', function (e) {
-        var index = boardCoords.indexOf(e.target);
-        var row = index > 9 ? Math.floor(index / 10) : 0;
-        var column = index % 10;
-        player.gameboard.receiveAttack(row, column);
-        _this.renderOpponent(player, element);
-      });
+      if (!item.classList.contains('hit') && !item.classList.contains('miss')) {
+        item.addEventListener('click', function (e) {
+          var index = boardCoords.indexOf(e.target);
+          var row = index > 9 ? Math.floor(index / 10) : 0;
+          var column = index % 10;
+          var message = player.gameboard.receiveAttack(row, column);
+          player.gameboard.checkSunk();
+          _this.message.textContent = message;
+          _this.renderOpponent(player, element);
+        });
+      }
     });
   },
   clearGameboard: function clearGameboard(element) {
     while (element.firstChild) {
       element.firstChild.remove();
     }
+  },
+  toggleTurnButton: function toggleTurnButton() {
+    var _this2 = this;
+    this.turnButton.textContent === 'Switch Turn' ? function () {
+      _this2.turnButton.textContent = 'Begin Turn';
+      _this2.turnButton.classList.add('begin-button');
+    } : function () {
+      _this2.turnButton.classList.remove('begin-button');
+      _this2.turnButton.textContent = 'Switch Turn';
+    };
   }
 };
 
@@ -364,14 +403,28 @@ footer {
 
 #gameboard-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
+}
+
+#ui-container {
+  height: 100%;
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+#message-container {
+  text-align: center;
+  font-size: 24px;
 }
 
 .gameboard {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
-  gap: 2px;
+  gap: 1px;
 }
 
 .coordinate {
@@ -381,6 +434,7 @@ footer {
   display: grid;
   place-items: center;
   font-size: 30px;
+  border-radius: 5px;
 }
 
 .ship {
@@ -394,7 +448,7 @@ footer {
 .miss {
   background-color: rgb(133, 133, 255);
 }
-`, "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,aAAa;EACb,sBAAsB;EACtB,8BAA8B;AAChC;;AAEA;;EAEE,WAAW;EACX,aAAa;EACb,uBAAuB;EACvB,mBAAmB;AACrB;;AAEA;EACE,gBAAgB;EAChB,kBAAkB;AACpB;;AAEA;EACE,aAAa;EACb,6BAA6B;EAC7B,mBAAmB;AACrB;;AAEA;EACE,aAAa;EACb,sCAAsC;EACtC,QAAQ;AACV;;AAEA;EACE,YAAY;EACZ,WAAW;EACX,uBAAuB;EACvB,aAAa;EACb,mBAAmB;EACnB,eAAe;AACjB;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC","sourcesContent":["body {\n  height: 100vh;\n  width: 100vw;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\nheader,\nfooter {\n  width: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n#title {\n  font-size: 100px;\n  text-align: center;\n}\n\n#gameboard-container {\n  display: flex;\n  justify-content: space-around;\n  align-items: center;\n}\n\n.gameboard {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  gap: 2px;\n}\n\n.coordinate {\n  height: 50px;\n  width: 50px;\n  border: solid black 2px;\n  display: grid;\n  place-items: center;\n  font-size: 30px;\n}\n\n.ship {\n  background-color: rgb(113, 197, 113);\n}\n\n.hit {\n  background-color: rgb(255, 129, 129);\n}\n\n.miss {\n  background-color: rgb(133, 133, 255);\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,aAAa;EACb,sBAAsB;EACtB,8BAA8B;AAChC;;AAEA;;EAEE,WAAW;EACX,aAAa;EACb,uBAAuB;EACvB,mBAAmB;AACrB;;AAEA;EACE,gBAAgB;EAChB,kBAAkB;AACpB;;AAEA;EACE,aAAa;EACb,uBAAuB;EACvB,mBAAmB;AACrB;;AAEA;EACE,YAAY;EACZ,UAAU;EACV,aAAa;EACb,sBAAsB;EACtB,6BAA6B;EAC7B,mBAAmB;AACrB;;AAEA;EACE,kBAAkB;EAClB,eAAe;AACjB;;AAEA;EACE,aAAa;EACb,sCAAsC;EACtC,QAAQ;AACV;;AAEA;EACE,YAAY;EACZ,WAAW;EACX,uBAAuB;EACvB,aAAa;EACb,mBAAmB;EACnB,eAAe;EACf,kBAAkB;AACpB;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC;;AAEA;EACE,oCAAoC;AACtC","sourcesContent":["body {\n  height: 100vh;\n  width: 100vw;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\nheader,\nfooter {\n  width: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n#title {\n  font-size: 100px;\n  text-align: center;\n}\n\n#gameboard-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n#ui-container {\n  height: 100%;\n  width: 20%;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-evenly;\n  align-items: center;\n}\n\n#message-container {\n  text-align: center;\n  font-size: 24px;\n}\n\n.gameboard {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  gap: 1px;\n}\n\n.coordinate {\n  height: 50px;\n  width: 50px;\n  border: solid black 2px;\n  display: grid;\n  place-items: center;\n  font-size: 30px;\n  border-radius: 5px;\n}\n\n.ship {\n  background-color: rgb(113, 197, 113);\n}\n\n.hit {\n  background-color: rgb(255, 129, 129);\n}\n\n.miss {\n  background-color: rgb(133, 133, 255);\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1141,7 +1195,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var player1 = new _player__WEBPACK_IMPORTED_MODULE_2__.Human('Ben');
-var player2 = new _player__WEBPACK_IMPORTED_MODULE_2__.Computer();
+var player2 = new _player__WEBPACK_IMPORTED_MODULE_2__.Human('Zach');
+_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.turnButton.addEventListener('click', function () {
+  if (!_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.turnButton.classList.contains('begin-button')) {
+    _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.switchScreen();
+  }
+  if (_renderDom__WEBPACK_IMPORTED_MODULE_3__.domElements.turnButton.classList.contains('begin-button')) {
+    _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.switchActive();
+    _gameFlow__WEBPACK_IMPORTED_MODULE_4__.gameFlow.displayBoards();
+  }
+});
 player1.gameboard.placeShip(2, 2, 3);
 player1.gameboard.placeShip(3, 3, 3);
 player1.gameboard.placeShip(5, 0, 1);
