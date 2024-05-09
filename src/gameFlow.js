@@ -1,6 +1,7 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable import/prefer-default-export */
 import { domElements } from './renderDom';
-import { Human, Computer } from './player';
+import { eventListeners } from './eventListeners';
 
 export const gameFlow = {
   activePlayer: undefined,
@@ -9,36 +10,71 @@ export const gameFlow = {
   inactiveGameboard: undefined,
 
   loadGame() {
+    domElements.clearText(domElements.message);
+    domElements.clearText(domElements.alert);
     domElements.startDialog.showModal();
   },
 
   initPvpMode() {
     domElements.startDialog.close();
     domElements.pvpDialog.showModal();
-    domElements.pvpStartButton.addEventListener('click', () => {
-      this.activePlayer = new Human(domElements.player1Name.value);
-      this.activeGameboard = domElements.gameboardOne;
-      this.inactivePlayer = new Human(domElements.player2Name.value);
-      this.inactiveGameboard = domElements.gameboardTwo;
-      domElements.pvpDialog.close();
-      domElements.renderGameboard(this.activePlayer, this.activeGameboard);
-      domElements.renderGameboard(this.inactivePlayer, this.inactiveGameboard);
-      domElements.renderShips(domElements.player1Ships);
-    });
+    eventListeners.activatePvpStart();
   },
 
   initPvcMode() {
     domElements.startDialog.close();
     domElements.pvcDialog.showModal();
-    domElements.pvcStartButton.addEventListener('click', () => {
-      this.activePlayer = new Human(domElements.player1Name.value);
-      this.activeGameboard = domElements.gameboardOne;
-      this.inactivePlayer = new Computer();
-      this.inactiveGameboard = domElements.gameboardTwo;
-      domElements.pvcDialog.close();
-      domElements.renderGameboard(this.activePlayer, this.activeGameboard);
-      domElements.renderGameboard(this.inactivePlayer, this.inactiveGameboard);
-    });
+    eventListeners.activatePvcStart();
+  },
+
+  async shipPlacement() {
+    const shipLengths = [5, 4];
+    const shipNames = [
+      'Carrier',
+      'Battleship',
+      // 'Cruiser',
+      // 'Submarine',
+      // 'Destroyer',
+    ];
+    for (let i = 0; i < shipLengths.length; i++) {
+      domElements.clearText(domElements.message);
+      domElements.animateText(
+        `${this.activePlayer.name}, place your ${shipNames[i].toLowerCase()} on the board`,
+        domElements.message,
+      );
+      const result = await eventListeners.activatePlacement(
+        this.activePlayer,
+        this.activeGameboard,
+        shipNames[i],
+        shipLengths[i],
+      );
+      if (result === false) {
+        i--;
+      }
+    }
+    domElements.renderBlankBoard(this.activeGameboard);
+    for (let i = 0; i < shipLengths.length; i++) {
+      domElements.clearText(domElements.message);
+      domElements.animateText(
+        `${this.inactivePlayer.name}, place your ${shipNames[i].toLowerCase()} on the board`,
+        domElements.message,
+      );
+      const result = await eventListeners.activatePlacement(
+        this.inactivePlayer,
+        this.inactiveGameboard,
+        shipNames[i],
+        shipLengths[i],
+      );
+      if (result === false) {
+        i--;
+      }
+    }
+    domElements.renderBlankBoard(this.inactiveGameboard);
+    domElements.clearText(domElements.message);
+    domElements.animateText(
+      'Press the button below to begin the game',
+      domElements.message,
+    );
   },
 
   switchActive() {
@@ -51,11 +87,18 @@ export const gameFlow = {
     this.activeGameboard = inactiveGameboard;
     this.inactivePlayer = activePlayer;
     this.inactiveGameboard = activeGameboard;
+
+    domElements.clearText(domElements.alert);
+    domElements.clearText(domElements.message);
+    domElements.animateText(
+      `${this.activePlayer.name}'s turn`,
+      domElements.message,
+    );
   },
 
   displayBoards() {
     domElements.renderOpponent(this.inactivePlayer, this.inactiveGameboard);
-    domElements.activateCoords(this.inactivePlayer, this.inactiveGameboard);
+    eventListeners.activateCoords(this.inactivePlayer, this.inactiveGameboard);
     domElements.renderGameboard(this.activePlayer, this.activeGameboard);
     domElements.toggleTurnButton();
   },
@@ -67,8 +110,11 @@ export const gameFlow = {
   },
 
   endGame() {
-    domElements.turnButton.textContent = 'Start a New Game';
+    domElements.alert.textContent = '';
+    domElements.turnButton.classList.remove('switch-button');
+    domElements.turnButton.classList.remove('begin-button');
     domElements.turnButton.classList.add('new-game-button');
+    domElements.turnButton.textContent = 'Start a New Game';
     return `Game Over! ${this.activePlayer.name} has successfully sunk all of ${this.inactivePlayer.name}'s ships`;
   },
 };

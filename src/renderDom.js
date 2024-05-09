@@ -16,6 +16,7 @@ export const domElements = {
   gameboardOne: document.querySelector('#gameboard-one'),
   gameboardTwo: document.querySelector('#gameboard-two'),
   message: document.querySelector('#message-container'),
+  alert: document.querySelector('#alert-container'),
   turnButton: document.querySelector('#turn-button'),
 
   renderShip(element, length) {
@@ -27,14 +28,6 @@ export const domElements = {
       shipUnit.classList.add('ship-unit');
       ship.appendChild(shipUnit);
     }
-  },
-
-  renderShips(element) {
-    this.renderShip(element, 5);
-    this.renderShip(element, 4);
-    this.renderShip(element, 3);
-    this.renderShip(element, 3);
-    this.renderShip(element, 2);
   },
 
   renderGameboard(player, element) {
@@ -73,27 +66,6 @@ export const domElements = {
     }
   },
 
-  activateCoords(player, element) {
-    const boardCoords = Array.from(element.querySelectorAll('.coordinate'));
-
-    boardCoords.forEach((item) => {
-      if (!item.classList.contains('hit') && !item.classList.contains('miss')) {
-        item.addEventListener('click', (e) => {
-          const index = boardCoords.indexOf(e.target);
-          const row = index > 9 ? Math.floor(index / 10) : 0;
-          const column = index % 10;
-          const message = player.gameboard.receiveAttack(row, column);
-          player.gameboard.checkSunk();
-          this.message.textContent = message;
-          this.renderOpponent(player, element);
-          if (player.gameboard.checkFleet() === true) {
-            this.message.textContent = gameFlow.endGame();
-          }
-        });
-      }
-    });
-  },
-
   renderBlankBoard(element) {
     const boardCoords = element.querySelectorAll('.coordinate');
     boardCoords.forEach((ele) => {
@@ -110,15 +82,32 @@ export const domElements = {
   },
 
   toggleTurnButton(player) {
-    this.turnButton.textContent === 'Switch Turn'
+    this.turnButton.classList.remove('new-game-button');
+    !this.turnButton.classList.contains('begin-button')
       ? (() => {
           this.turnButton.textContent = 'Begin Turn';
+          this.turnButton.classList.remove('switch-button');
           this.turnButton.classList.add('begin-button');
           this.message.textContent = `${player}'s Turn`;
         })()
       : (() => {
           this.turnButton.classList.remove('begin-button');
+          this.turnButton.classList.add('switch-button');
           this.turnButton.textContent = 'Switch Turn';
         })();
+  },
+
+  animateText(text, element, index = 0) {
+    if (index === text.length) {
+      return;
+    }
+    element.textContent += text[index];
+    setTimeout(() => {
+      this.animateText(text, element, index + 1);
+    }, 20);
+  },
+
+  clearText(element) {
+    element.textContent = '';
   },
 };

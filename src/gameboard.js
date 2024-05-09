@@ -21,29 +21,29 @@ export default class Gameboard {
       : (this.horizontal = true);
   }
 
-  placeShip(length, row, column) {
-    const ship = new Ship(length);
+  placeShip(name, length, row, column) {
+    const ship = new Ship(name, length);
     if (this.horizontal === true) {
+      if (column + length > this.columns) {
+        return 'You are trying to place the ship out of bounds';
+      }
       for (let i = 0; i < ship.length; i++) {
         if (this.grid[row][column + i] !== undefined) {
           return 'You are trying to place the ship on an occupied coordinate';
         }
-      }
-      if (column + length > this.columns) {
-        return 'You are trying to place the ship out of bounds';
       }
       for (let i = 0; i < ship.length; i++) {
         this.grid[row][column + i] = this.token;
         ship.coordinates.push([row, column + i]);
       }
     } else if (this.horizontal === false) {
+      if (row + length > this.rows) {
+        return 'You are trying to place the ship out of bounds';
+      }
       for (let i = 0; i < ship.length; i++) {
         if (this.grid[row + i][column] !== undefined) {
           return 'You are trying to place the ship on an occupied coordinate';
         }
-      }
-      if (row + length > this.rows) {
-        return 'You are trying to place the ship out of bounds';
       }
       for (let i = 0; i < ship.length; i++) {
         this.grid[row + i][column] = this.token;
@@ -51,7 +51,7 @@ export default class Gameboard {
       }
     }
     this.shipList.push(ship);
-    return 'ship placed';
+    return `${ship.name} placed`;
   }
 
   receiveAttack(row, column) {
@@ -69,7 +69,7 @@ export default class Gameboard {
       }
       if (ship.hits === ship.length) {
         ship.isSunk();
-        message = `${gameFlow.activePlayer.name} sunk a ship`;
+        message = `${gameFlow.activePlayer.name} sunk the ${ship.name}`;
       }
     });
     return message;
