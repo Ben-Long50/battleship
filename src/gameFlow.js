@@ -28,10 +28,10 @@ export const gameFlow = {
   },
 
   async shipPlacement() {
-    const shipLengths = [5, 4];
+    const shipLengths = [2];
     const shipNames = [
       'Carrier',
-      'Battleship',
+      // 'Battleship',
       // 'Cruiser',
       // 'Submarine',
       // 'Destroyer',
@@ -75,6 +75,7 @@ export const gameFlow = {
       'Press the button below to begin the game',
       domElements.message,
     );
+    domElements.renderTurnButton(undefined, 'Begin Game');
   },
 
   switchActive() {
@@ -87,26 +88,23 @@ export const gameFlow = {
     this.activeGameboard = inactiveGameboard;
     this.inactivePlayer = activePlayer;
     this.inactiveGameboard = activeGameboard;
-
-    domElements.clearText(domElements.alert);
-    domElements.clearText(domElements.message);
-    domElements.animateText(
-      `${this.activePlayer.name}'s turn`,
-      domElements.message,
-    );
   },
 
   displayBoards() {
     domElements.renderOpponent(this.inactivePlayer, this.inactiveGameboard);
     eventListeners.activateCoords(this.inactivePlayer, this.inactiveGameboard);
     domElements.renderGameboard(this.activePlayer, this.activeGameboard);
-    domElements.toggleTurnButton();
   },
 
   switchScreen() {
     domElements.renderBlankBoard(this.activeGameboard);
     domElements.renderBlankBoard(this.inactiveGameboard);
-    domElements.toggleTurnButton(this.inactivePlayer.name);
+    domElements.clearText(domElements.message);
+    domElements.clearText(domElements.alert);
+    domElements.animateText(
+      `${this.activePlayer.name}'s turn`,
+      domElements.message,
+    );
   },
 
   endGame() {

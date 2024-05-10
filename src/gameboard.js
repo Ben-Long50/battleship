@@ -25,11 +25,11 @@ export default class Gameboard {
     const ship = new Ship(name, length);
     if (this.horizontal === true) {
       if (column + length > this.columns) {
-        return 'You are trying to place the ship out of bounds';
+        return 'You cannot place the ship out of bounds';
       }
       for (let i = 0; i < ship.length; i++) {
         if (this.grid[row][column + i] !== undefined) {
-          return 'You are trying to place the ship on an occupied coordinate';
+          return 'You cannot place the ship on an occupied coordinate';
         }
       }
       for (let i = 0; i < ship.length; i++) {
@@ -38,11 +38,11 @@ export default class Gameboard {
       }
     } else if (this.horizontal === false) {
       if (row + length > this.rows) {
-        return 'You are trying to place the ship out of bounds';
+        return 'You cannot place the ship out of bounds';
       }
       for (let i = 0; i < ship.length; i++) {
         if (this.grid[row + i][column] !== undefined) {
-          return 'You are trying to place the ship on an occupied coordinate';
+          return 'You cannot place the ship on an occupied coordinate';
         }
       }
       for (let i = 0; i < ship.length; i++) {

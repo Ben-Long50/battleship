@@ -11,15 +11,3 @@ domElements.pvpMode.addEventListener('click', () => {
 domElements.pvcMode.addEventListener('click', () => {
   gameFlow.initPvcMode();
 });
-
-domElements.turnButton.addEventListener('click', (e) => {
-  if (e.target.classList.contains('switch-button')) {
-    gameFlow.switchScreen();
-  } else if (e.target.classList.contains('begin-button')) {
-    gameFlow.switchActive();
-    gameFlow.displayBoards();
-  } else if (e.target.classList.contains('new-game-button')) {
-    domElements.toggleTurnButton();
-    gameFlow.loadGame();
-  }
-});

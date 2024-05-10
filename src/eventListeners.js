@@ -131,6 +131,7 @@ export const eventListeners = {
           domElements.clearText(domElements.alert);
           domElements.animateText(message, domElements.alert);
           domElements.renderOpponent(player, element);
+          domElements.renderTurnButton('switch-button', 'Switch Turn');
           if (player.gameboard.checkFleet() === true) {
             message = gameFlow.endGame();
             domElements.clearText(domElements.message);

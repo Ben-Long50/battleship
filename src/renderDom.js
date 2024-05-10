@@ -17,17 +17,40 @@ export const domElements = {
   gameboardTwo: document.querySelector('#gameboard-two'),
   message: document.querySelector('#message-container'),
   alert: document.querySelector('#alert-container'),
-  turnButton: document.querySelector('#turn-button'),
+  buttonContainer: document.querySelector('#button-container'),
+  turnButton: undefined,
 
-  renderShip(element, length) {
-    const ship = document.createElement('div');
-    ship.classList.add('ship-display');
-    element.appendChild(ship);
-    for (let i = 0; i < length; i++) {
-      const shipUnit = document.createElement('div');
-      shipUnit.classList.add('ship-unit');
-      ship.appendChild(shipUnit);
-    }
+  renderTurnButton(property, text) {
+    const turnButton = document.createElement('button');
+    turnButton.id = 'turn-button';
+    turnButton.classList.add(property);
+    turnButton.textContent = text;
+    this.buttonContainer.appendChild(turnButton);
+    this.turnButton = this.getTurnButton();
+    turnButton.addEventListener('click', (e) => {
+      if (e.target.classList.contains(undefined)) {
+        this.buttonContainer.removeChild(turnButton);
+        domElements.clearText(domElements.message);
+        domElements.clearText(domElements.alert);
+        this.renderTurnButton('begin-button', 'Begin Turn');
+        gameFlow.switchScreen();
+      } else if (e.target.classList.contains('switch-button')) {
+        this.buttonContainer.removeChild(turnButton);
+        this.renderTurnButton('begin-button', 'Begin Turn');
+        gameFlow.switchActive();
+        gameFlow.switchScreen();
+      } else if (e.target.classList.contains('begin-button')) {
+        this.buttonContainer.removeChild(turnButton);
+        gameFlow.displayBoards();
+      } else if (e.target.classList.contains('new-game-button')) {
+        this.buttonContainer.removeChild(turnButton);
+        gameFlow.loadGame();
+      }
+    });
+  },
+
+  getTurnButton() {
+    return document.querySelector('#turn-button');
   },
 
   renderGameboard(player, element) {
@@ -82,18 +105,18 @@ export const domElements = {
   },
 
   toggleTurnButton(player) {
-    this.turnButton.classList.remove('new-game-button');
-    !this.turnButton.classList.contains('begin-button')
+    turnButton.classList.remove('new-game-button');
+    !turnButton.classList.contains('begin-button')
       ? (() => {
-          this.turnButton.textContent = 'Begin Turn';
-          this.turnButton.classList.remove('switch-button');
-          this.turnButton.classList.add('begin-button');
-          this.message.textContent = `${player}'s Turn`;
+          turnButton.textContent = 'Begin Turn';
+          turnButton.classList.remove('switch-button');
+          turnButton.classList.add('begin-button');
+          message.textContent = `${player}'s Turn`;
         })()
       : (() => {
-          this.turnButton.classList.remove('begin-button');
-          this.turnButton.classList.add('switch-button');
-          this.turnButton.textContent = 'Switch Turn';
+          turnButton.classList.remove('begin-button');
+          turnButton.classList.add('switch-button');
+          turnButton.textContent = 'Switch Turn';
         })();
   },
 
