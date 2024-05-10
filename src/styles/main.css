@@ -1,9 +1,24 @@
+@font-face {
+  font-family: 'digital';
+  src: url('../assets/digital.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'digital-italic';
+  src: url('../assets/digital-italic.ttf') format('truetype');
+}
+
 body {
   height: 100vh;
   width: 100vw;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+#title {
+  font-family: 'digital-italic';
+  letter-spacing: 10px;
 }
 
 header,
@@ -37,11 +52,24 @@ dialog::backdrop {
 #single-input-container {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
+  gap: 20px;
+}
+
+#pvp-dialog-container,
+#pvc-dialog-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 #dual-input-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+#pvp-start-button {
+  width: 100%;
 }
 
 #title {
@@ -56,24 +84,25 @@ dialog::backdrop {
 }
 
 #ui-container {
+  font-family: 'digital';
   box-sizing: border-box;
   height: 100%;
   width: 20%;
   display: grid;
   grid-template-columns: 1;
   grid-template-rows: 1fr 1fr auto;
-  padding-left: 3%;
-  padding-right: 3%;
+  padding-left: 2%;
+  padding-right: 2%;
 }
 
 #message-container {
   text-align: center;
-  font-size: 32px;
+  font-size: 40px;
 }
 
 #alert-container {
   text-align: center;
-  font-size: 32px;
+  font-size: 48px;
 }
 
 #button-container {

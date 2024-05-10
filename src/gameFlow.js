@@ -18,13 +18,11 @@ export const gameFlow = {
   initPvpMode() {
     domElements.startDialog.close();
     domElements.pvpDialog.showModal();
-    eventListeners.activatePvpStart();
   },
 
   initPvcMode() {
     domElements.startDialog.close();
     domElements.pvcDialog.showModal();
-    eventListeners.activatePvcStart();
   },
 
   async shipPlacement() {
@@ -36,12 +34,13 @@ export const gameFlow = {
       // 'Submarine',
       // 'Destroyer',
     ];
-    for (let i = 0; i < shipLengths.length; i++) {
+    const alert = 'Use the middle mouse wheel to change the ships orientation';
+    domElements.animateText(alert, domElements.alert);
+    for (let i = 0; i < shipNames.length; i++) {
       domElements.clearText(domElements.message);
-      domElements.animateText(
-        `${this.activePlayer.name}, place your ${shipNames[i].toLowerCase()} on the board`,
-        domElements.message,
-      );
+      console.log('ok');
+      const message = `${this.activePlayer.name}, place your ${shipNames[i].toLowerCase()} on the board`;
+      domElements.animateText(message, domElements.message);
       const result = await eventListeners.activatePlacement(
         this.activePlayer,
         this.activeGameboard,
@@ -55,10 +54,8 @@ export const gameFlow = {
     domElements.renderBlankBoard(this.activeGameboard);
     for (let i = 0; i < shipLengths.length; i++) {
       domElements.clearText(domElements.message);
-      domElements.animateText(
-        `${this.inactivePlayer.name}, place your ${shipNames[i].toLowerCase()} on the board`,
-        domElements.message,
-      );
+      const message = `${this.inactivePlayer.name}, place your ${shipNames[i].toLowerCase()} on the board`;
+      domElements.animateText(message, domElements.message);
       const result = await eventListeners.activatePlacement(
         this.inactivePlayer,
         this.inactiveGameboard,

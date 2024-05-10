@@ -1,47 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import { domElements } from './renderDom';
-import { Human, Computer } from './player';
 import { gameFlow } from './gameFlow';
 
 export const eventListeners = {
-  activatePvpStart() {
-    domElements.pvpStartButton.addEventListener('click', () => {
-      gameFlow.activePlayer = new Human(domElements.player1Name.value);
-      gameFlow.activeGameboard = domElements.gameboardOne;
-      gameFlow.inactivePlayer = new Human(domElements.player2Name.value);
-      gameFlow.inactiveGameboard = domElements.gameboardTwo;
-      domElements.pvpDialog.close();
-      domElements.renderGameboard(
-        gameFlow.activePlayer,
-        gameFlow.activeGameboard,
-      );
-      domElements.renderGameboard(
-        gameFlow.inactivePlayer,
-        gameFlow.inactiveGameboard,
-      );
-      gameFlow.shipPlacement();
-    });
-  },
-
-  activatePvcStart() {
-    domElements.pvcStartButton.addEventListener('click', () => {
-      gameFlow.activePlayer = new Human(domElements.player1Name.value);
-      gameFlow.activeGameboard = domElements.gameboardOne;
-      gameFlow.inactivePlayer = new Computer();
-      gameFlow.inactiveGameboard = domElements.gameboardTwo;
-      domElements.pvcDialog.close();
-      domElements.renderGameboard(
-        gameFlow.activePlayer,
-        gameFlow.activeGameboard,
-      );
-      domElements.renderGameboard(
-        gameFlow.inactivePlayer,
-        gameFlow.inactiveGameboard,
-      );
-      gameFlow.shipPlacement();
-    });
-  },
-
   activatePlacement(player, element, name, length) {
     const boardCoords = Array.from(element.querySelectorAll('.coordinate'));
     let index = 0;
