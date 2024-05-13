@@ -86,11 +86,17 @@ export const domElements = {
           coordinate.classList.add('hit');
         } else if (index === 'miss') {
           coordinate.classList.add('miss');
+        } else if (
+          index != player.token &&
+          gameFlow.activePlayer.name === 'Computer'
+        ) {
+          coordinate.classList.add('ship');
         }
         coordinate.classList.add('coordinate');
         if (
           !coordinate.classList.contains('hit') &&
-          !coordinate.classList.contains('miss')
+          !coordinate.classList.contains('miss') &&
+          gameFlow.activePlayer.name != 'Computer'
         ) {
           coordinate.classList.add('active-coord');
         }
@@ -131,6 +137,7 @@ export const domElements = {
   },
 
   async animateText(text, element) {
+    element.style.removeProperty('display');
     for (let i = 0; i < text.length; i++) {
       const timer = await setTimeout(() => {
         element.textContent += text[i];
@@ -147,6 +154,7 @@ export const domElements = {
       });
       this.messageTimers = [];
     } else if (element === this.alert) {
+      this.alert.style.display = 'none';
       this.alertTimers.forEach((timer) => {
         clearTimeout(timer);
       });

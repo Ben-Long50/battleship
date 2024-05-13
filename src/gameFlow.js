@@ -155,14 +155,39 @@ export const gameFlow = {
   },
 
   displayBoards() {
-    domElements.renderOpponent(this.inactivePlayer, this.inactiveGameboard);
-    eventListeners.activateCoords(this.inactivePlayer, this.inactiveGameboard);
-    domElements.renderGameboard(this.activePlayer, this.activeGameboard);
+    if (this.activePlayer.name === 'Computer') {
+      const player = this.inactivePlayer;
+      const row = Math.floor(Math.random() * 10);
+      const column = Math.floor(Math.random() * 10);
+      let message = player.gameboard.receiveAttack(row, column);
+      player.gameboard.checkSunk();
+      domElements.clearText(domElements.alert);
+      domElements.animateText(message, domElements.alert);
+      domElements.renderOpponent(player, this.inactiveGameboard);
+      domElements.renderTurnButton('switch-button', 'Switch Turn');
+      if (player.gameboard.checkFleet() === true) {
+        message = gameFlow.endGame();
+        domElements.clearText(domElements.message);
+        domElements.animateText(message, domElements.message);
+      }
+    } else {
+      domElements.renderOpponent(this.inactivePlayer, this.inactiveGameboard);
+      eventListeners.activateCoords(
+        this.inactivePlayer,
+        this.inactiveGameboard,
+      );
+      domElements.renderGameboard(this.activePlayer, this.activeGameboard);
+    }
   },
 
   switchScreen() {
-    domElements.renderBlankBoard(this.activeGameboard);
-    domElements.renderBlankBoard(this.inactiveGameboard);
+    if (
+      this.activePlayer.name != 'Computer' &&
+      this.inactivePlayer.name != 'Computer'
+    ) {
+      domElements.renderBlankBoard(this.activeGameboard);
+      domElements.renderBlankBoard(this.inactiveGameboard);
+    }
     domElements.clearText(domElements.message);
     domElements.clearText(domElements.alert);
     domElements.animateText(
