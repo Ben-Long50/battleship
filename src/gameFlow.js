@@ -195,7 +195,28 @@ export const gameFlow = {
     const boardCoords = Array.from(
       this.inactiveGameboard.querySelectorAll('.coordinate'),
     );
+    const sunkCoords = [];
+    this.inactivePlayer.gameboard.sunkShips.forEach((ship) => {
+      for (let i = 0; i < ship.length; i++) {
+        const coord = ship.coordinates[i].reduce((acc, curr) =>
+          acc.toString().concat(curr.toString()),
+        );
+        sunkCoords.push(parseInt(coord));
+      }
+    });
+    const remainingShipCoords = [];
+    this.inactivePlayer.gameboard.shipList.forEach((ship) => {
+      for (let i = 0; i < ship.length; i++) {
+        const coord = ship.coordinates[i].reduce((acc, curr) =>
+          acc.toString().concat(curr.toString()),
+        );
+        remainingShipCoords.push(parseInt(coord));
+      }
+    });
     const adjacentToHit = boardCoords.map((element, index) => {
+      if (sunkCoords.includes(index) && !remainingShipCoords.includes(index)) {
+        return undefined;
+      }
       if (element.classList.contains('hit')) {
         return [index - 10, index + 1, index + 10, index - 1];
       }
@@ -220,9 +241,13 @@ export const gameFlow = {
       (acc, curr) => acc.concat(curr),
       [],
     );
+    optionsArray.forEach((option, index) => {
+      if (sunkCoords.includes(option)) {
+        optionsArray.splice(index, 0);
+      }
+    });
     const selectedCoord =
       optionsArray[Math.floor(Math.random() * optionsArray.length)];
-    console.log(selectedCoord);
 
     if (selectedCoord === 0) {
       return [0, 0];

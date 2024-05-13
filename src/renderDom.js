@@ -38,6 +38,7 @@ export const domElements = {
 
   renderSunkShip(list, name, length) {
     const sunkShip = document.createElement('div');
+    sunkShip.classList.add('sunk-ship');
     sunkShip.textContent = `${name} (${length})`;
     list.appendChild(sunkShip);
   },

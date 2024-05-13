@@ -80,13 +80,12 @@ export default class Gameboard {
     this.shipList.forEach((ship, index) => {
       if (ship.sunk === true) {
         const sunkShip = this.shipList.splice(index, 1);
-        console.log(sunkShip);
         domElements.renderSunkShip(
           gameFlow.activeList,
           sunkShip[0].name,
           sunkShip[0].length,
         );
-        this.sunkShips.push(sunkShip);
+        this.sunkShips.push(sunkShip[0]);
       }
     });
   }
