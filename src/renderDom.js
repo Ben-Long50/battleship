@@ -12,8 +12,10 @@ export const domElements = {
   playerName: document.querySelector('#player-name'),
   pvpStartButton: document.querySelector('#pvp-start-button'),
   pvcStartButton: document.querySelector('#pvc-start-button'),
-  player1Ships: document.querySelector('#player1-ship-info'),
-  player2Ships: document.querySelector('#player2-ship-info'),
+  player1Title: document.querySelector('#player1-title'),
+  player2Title: document.querySelector('#player2-title'),
+  player1Sunk: document.querySelector('#player1-sunk-ships'),
+  player2Sunk: document.querySelector('#player2-sunk-ships'),
   gameboardOne: document.querySelector('#gameboard-one'),
   gameboardTwo: document.querySelector('#gameboard-two'),
   message: document.querySelector('#message-container'),
@@ -22,6 +24,23 @@ export const domElements = {
   turnButton: undefined,
   messageTimers: [],
   alertTimers: [],
+
+  renderTitles() {
+    this.player1Title.textContent = `${gameFlow.activePlayer.name}'s Gameboard`;
+    this.player2Title.textContent = `${gameFlow.inactivePlayer.name}'s Gameboard`;
+    const sunk1Title = document.createElement('div');
+    const sunk2Title = document.createElement('div');
+    sunk1Title.textContent = 'Ships Sunk:';
+    sunk2Title.textContent = 'Ships Sunk:';
+    this.player2Sunk.appendChild(sunk1Title);
+    this.player1Sunk.appendChild(sunk2Title);
+  },
+
+  renderSunkShip(list, name, length) {
+    const sunkShip = document.createElement('div');
+    sunkShip.textContent = `${name} (${length})`;
+    list.appendChild(sunkShip);
+  },
 
   renderTurnButton(property, text) {
     const turnButton = document.createElement('button');

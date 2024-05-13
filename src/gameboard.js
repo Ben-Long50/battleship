@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Ship from './ship';
 import { gameFlow } from './gameFlow';
+import { domElements } from './renderDom';
 
 export default class Gameboard {
   constructor() {
@@ -79,6 +80,12 @@ export default class Gameboard {
     this.shipList.forEach((ship, index) => {
       if (ship.sunk === true) {
         const sunkShip = this.shipList.splice(index, 1);
+        console.log(sunkShip);
+        domElements.renderSunkShip(
+          gameFlow.activeList,
+          sunkShip[0].name,
+          sunkShip[0].length,
+        );
         this.sunkShips.push(sunkShip);
       }
     });

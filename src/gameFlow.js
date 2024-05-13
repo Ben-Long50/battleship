@@ -7,12 +7,16 @@ import { Human } from './player';
 export const gameFlow = {
   activePlayer: undefined,
   activeGameboard: undefined,
+  activeList: undefined,
   inactivePlayer: undefined,
   inactiveGameboard: undefined,
+  inactiveList: undefined,
 
   loadGame() {
-    domElements.clearText(domElements.message, domElements.messageTimers);
-    domElements.clearText(domElements.alert, domElements.alertTimers);
+    domElements.clearText(domElements.player1Sunk);
+    domElements.clearText(domElements.player2Sunk);
+    domElements.clearText(domElements.message);
+    domElements.clearText(domElements.alert);
     domElements.startDialog.showModal();
   },
 
@@ -145,13 +149,17 @@ export const gameFlow = {
   switchActive() {
     const { activePlayer } = this;
     const { activeGameboard } = this;
+    const { activeList } = this;
     const { inactivePlayer } = this;
     const { inactiveGameboard } = this;
+    const { inactiveList } = this;
 
     this.activePlayer = inactivePlayer;
     this.activeGameboard = inactiveGameboard;
+    this.activeList = inactiveList;
     this.inactivePlayer = activePlayer;
     this.inactiveGameboard = activeGameboard;
+    this.inactiveList = activeList;
   },
 
   displayBoards() {
