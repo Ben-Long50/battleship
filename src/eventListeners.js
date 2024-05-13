@@ -68,7 +68,7 @@ export const eventListeners = {
           domElements.clearText(domElements.alert);
           domElements.animateText(alert, domElements.alert);
           domElements.renderGameboard(player, element);
-          if (alert === `${name} placed`) {
+          if (alert === ` ${name} placed`) {
             resolve(true);
           } else {
             resolve(false);

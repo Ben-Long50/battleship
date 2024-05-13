@@ -24,11 +24,11 @@ domElements.pvpStartButton.addEventListener('click', () => {
     gameFlow.inactivePlayer,
     gameFlow.inactiveGameboard,
   );
-  gameFlow.shipPlacement();
+  gameFlow.pvpShipPlacement();
 });
 
 domElements.pvcStartButton.addEventListener('click', () => {
-  gameFlow.activePlayer = new Human(domElements.player1Name.value);
+  gameFlow.activePlayer = new Human(domElements.playerName.value);
   gameFlow.activeGameboard = domElements.gameboardOne;
   gameFlow.inactivePlayer = new Computer();
   gameFlow.inactiveGameboard = domElements.gameboardTwo;
@@ -38,5 +38,5 @@ domElements.pvcStartButton.addEventListener('click', () => {
     gameFlow.inactivePlayer,
     gameFlow.inactiveGameboard,
   );
-  gameFlow.shipPlacement();
+  gameFlow.pvcShipPlacement();
 });

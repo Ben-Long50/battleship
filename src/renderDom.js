@@ -9,6 +9,7 @@ export const domElements = {
   pvcDialog: document.querySelector('#pvc-dialog'),
   player1Name: document.querySelector('#player1-name'),
   player2Name: document.querySelector('#player2-name'),
+  playerName: document.querySelector('#player-name'),
   pvpStartButton: document.querySelector('#pvp-start-button'),
   pvcStartButton: document.querySelector('#pvc-start-button'),
   player1Ships: document.querySelector('#player1-ship-info'),
@@ -129,23 +130,27 @@ export const domElements = {
         })();
   },
 
-  animateText(text, element, index = 0) {
-    if (index === text.length) {
-      return;
+  async animateText(text, element) {
+    for (let i = 0; i < text.length; i++) {
+      const timer = await setTimeout(() => {
+        element.textContent += text[i];
+      }, 20 * i);
+      this.messageTimers.push(timer);
     }
-    element.textContent += text[index];
-    // array.push(
-    setTimeout(() => {
-      this.animateText(text, element, index + 1);
-    }, 20);
-    // );
   },
 
   clearText(element) {
-    // array.forEach((timer) => {
-    //   clearTimeout(timer);
-    // });
-    // array = [];
     element.textContent = '';
+    if (element === this.message) {
+      this.messageTimers.forEach((timer) => {
+        clearTimeout(timer);
+      });
+      this.messageTimers = [];
+    } else if (element === this.alert) {
+      this.alertTimers.forEach((timer) => {
+        clearTimeout(timer);
+      });
+      this.alertTimers = [];
+    }
   },
 };

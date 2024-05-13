@@ -2,6 +2,7 @@
 /* eslint-disable import/prefer-default-export */
 import { domElements } from './renderDom';
 import { eventListeners } from './eventListeners';
+import { Human } from './player';
 
 export const gameFlow = {
   activePlayer: undefined,
@@ -25,7 +26,7 @@ export const gameFlow = {
     domElements.pvcDialog.showModal();
   },
 
-  async shipPlacement() {
+  async pvpShipPlacement() {
     const shipLengths = [5, 4, 3, 3, 2];
     const shipNames = [
       'Carrier',
@@ -79,6 +80,66 @@ export const gameFlow = {
       domElements.message,
     );
     domElements.renderTurnButton(undefined, 'Begin Game');
+  },
+
+  async pvcShipPlacement() {
+    const shipLengths = [5, 4, 3, 3, 2];
+    const shipNames = [
+      'Carrier',
+      'Battleship',
+      'Cruiser',
+      'Submarine',
+      'Destroyer',
+    ];
+    const alert = "Use the middle mouse wheel to change the ship's orientation";
+    domElements.animateText(alert, domElements.alert);
+    for (let i = 0; i < shipNames.length; i++) {
+      domElements.clearText(domElements.message);
+      const message = `${this.activePlayer.name}, place your ${shipNames[i].toLowerCase()} on the board`;
+      domElements.animateText(message, domElements.message);
+      const result = await eventListeners.activatePlacement(
+        this.activePlayer,
+        this.activeGameboard,
+        shipNames[i],
+        shipLengths[i],
+      );
+
+      if (result === false) {
+        i--;
+      }
+    }
+    domElements.clearText(domElements.message);
+    const message = `${this.inactivePlayer.name} has finished placing it's ships`;
+    domElements.animateText(message, domElements.message);
+    for (let i = 0; i < shipLengths.length; i++) {
+      const row = Math.floor(Math.random() * 10);
+      const column = Math.floor(Math.random() * 10);
+      const orientation = Math.floor(Math.random() * 10) % 2;
+      if (orientation === 0) {
+        this.inactivePlayer.gameboard.horizontal = true;
+      } else {
+        this.inactivePlayer.gameboard.horizontal = false;
+      }
+      const result = this.inactivePlayer.gameboard.placeShip(
+        shipNames[i],
+        shipLengths[i],
+        row,
+        column,
+      );
+
+      if (result != ` ${shipNames[i]} placed`) {
+        i--;
+      }
+    }
+    domElements.renderBlankBoard(this.inactiveGameboard);
+    setTimeout(() => {
+      domElements.clearText(domElements.alert);
+      domElements.animateText(
+        'Press the button below to begin the game',
+        domElements.alert,
+      );
+      domElements.renderTurnButton(undefined, 'Begin Game');
+    }, 1000);
   },
 
   switchActive() {

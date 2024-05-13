@@ -10,6 +10,8 @@
 
 body {
   --text-color: rgb(0, 133, 0);
+  --background-color: rgba(0, 75, 0, 0.3);
+  --hover-color: rgba(255, 255, 255, 0.37);
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -100,8 +102,17 @@ dialog::backdrop {
   display: grid;
   grid-template-columns: 1;
   grid-template-rows: 1fr 1fr auto;
+  gap: 20px;
   padding-left: 2%;
   padding-right: 2%;
+}
+
+#message-container,
+#alert-container {
+  border-radius: 10px;
+  border: solid var(--text-color) 0.75px;
+  background-color: var(--background-color);
+  padding: 8px;
 }
 
 #message-container {
@@ -119,6 +130,21 @@ dialog::backdrop {
   place-items: center;
 }
 
+#turn-button {
+  font-family: 'digital';
+  color: var(--text-color);
+  font-size: 40px;
+  text-align: center;
+  border-radius: 10px;
+  border: solid var(--text-color) 0.75px;
+  background-color: var(--background-color);
+  padding: 8px;
+}
+
+#turn-button:hover {
+  background-color: var(--hover-color);
+}
+
 .gameboard {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
@@ -129,7 +155,7 @@ dialog::backdrop {
   height: 5vh;
   width: 5vh;
   border: solid var(--text-color) 0.75px;
-  background-color: rgba(0, 75, 0, 0.3);
+  background-color: var(--background-color);
   display: grid;
   place-items: center;
   font-size: 30px;
@@ -137,7 +163,7 @@ dialog::backdrop {
 }
 
 .active-coord:hover {
-  background-color: rgba(255, 255, 255, 0.37);
+  background-color: var(--hover-color);
 }
 
 .ship {

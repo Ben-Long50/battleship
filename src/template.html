@@ -28,8 +28,8 @@
     <dialog id="pvc-dialog">
       <div id="pvc-dialog-container">
         <div id="single-input-container">
-          <label for="player1-name">Your Name</label>
-          <input type="text" id="player1-name" />
+          <label for="player-name">Your Name</label>
+          <input type="text" id="player-name" />
         </div>
         <div class="dialog-button-container">
           <button id="pvc-start-button">Start Game</button>
@@ -42,8 +42,12 @@
     <div id="gameboard-container">
       <div id="gameboard-one" class="gameboard"></div>
       <div id="ui-container">
-        <h2 id="message-container"></h2>
-        <h2 id="alert-container"></h2>
+        <div id="message-grid">
+          <h2 id="message-container"></h2>
+        </div>
+        <div id="alert-grid">
+          <h2 id="alert-container"></h2>
+        </div>
         <div id="button-container"></div>
       </div>
       <div id="gameboard-two" class="gameboard"></div>
