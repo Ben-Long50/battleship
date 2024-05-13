@@ -69,7 +69,7 @@ export default class Gameboard {
       }
       if (ship.hits === ship.length) {
         ship.isSunk();
-        message = `${gameFlow.activePlayer.name} sunk the ${ship.name}`;
+        message = ` ${gameFlow.activePlayer.name} sunk the ${ship.name}`;
       }
     });
     return message;

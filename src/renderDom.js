@@ -19,6 +19,8 @@ export const domElements = {
   alert: document.querySelector('#alert-container'),
   buttonContainer: document.querySelector('#button-container'),
   turnButton: undefined,
+  messageTimers: [],
+  alertTimers: [],
 
   renderTurnButton(property, text) {
     const turnButton = document.createElement('button');
@@ -30,8 +32,8 @@ export const domElements = {
     turnButton.addEventListener('click', (e) => {
       if (e.target.classList.contains(undefined)) {
         this.buttonContainer.removeChild(turnButton);
-        domElements.clearText(domElements.message);
-        domElements.clearText(domElements.alert);
+        domElements.clearText(domElements.message, domElements.messageTimers);
+        domElements.clearText(domElements.alert, domElements.alertTimers);
         this.renderTurnButton('begin-button', 'Begin Turn');
         gameFlow.switchScreen();
       } else if (e.target.classList.contains('switch-button')) {
@@ -85,6 +87,12 @@ export const domElements = {
           coordinate.classList.add('miss');
         }
         coordinate.classList.add('coordinate');
+        if (
+          !coordinate.classList.contains('hit') &&
+          !coordinate.classList.contains('miss')
+        ) {
+          coordinate.classList.add('active-coord');
+        }
       });
     }
   },
@@ -95,6 +103,7 @@ export const domElements = {
       ele.classList.remove('ship');
       ele.classList.remove('hit');
       ele.classList.remove('miss');
+      ele.classList.remove('active-coord');
     });
   },
 
@@ -125,12 +134,18 @@ export const domElements = {
       return;
     }
     element.textContent += text[index];
+    // array.push(
     setTimeout(() => {
       this.animateText(text, element, index + 1);
     }, 20);
+    // );
   },
 
   clearText(element) {
+    // array.forEach((timer) => {
+    //   clearTimeout(timer);
+    // });
+    // array = [];
     element.textContent = '';
   },
 };

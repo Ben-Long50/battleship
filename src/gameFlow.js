@@ -10,8 +10,8 @@ export const gameFlow = {
   inactiveGameboard: undefined,
 
   loadGame() {
-    domElements.clearText(domElements.message);
-    domElements.clearText(domElements.alert);
+    domElements.clearText(domElements.message, domElements.messageTimers);
+    domElements.clearText(domElements.alert, domElements.alertTimers);
     domElements.startDialog.showModal();
   },
 
@@ -26,19 +26,18 @@ export const gameFlow = {
   },
 
   async shipPlacement() {
-    const shipLengths = [2];
+    const shipLengths = [5, 4, 3, 3, 2];
     const shipNames = [
       'Carrier',
-      // 'Battleship',
-      // 'Cruiser',
-      // 'Submarine',
-      // 'Destroyer',
+      'Battleship',
+      'Cruiser',
+      'Submarine',
+      'Destroyer',
     ];
-    const alert = 'Use the middle mouse wheel to change the ships orientation';
+    const alert = "Use the middle mouse wheel to change the ship's orientation";
     domElements.animateText(alert, domElements.alert);
     for (let i = 0; i < shipNames.length; i++) {
       domElements.clearText(domElements.message);
-      console.log('ok');
       const message = `${this.activePlayer.name}, place your ${shipNames[i].toLowerCase()} on the board`;
       domElements.animateText(message, domElements.message);
       const result = await eventListeners.activatePlacement(
@@ -47,10 +46,17 @@ export const gameFlow = {
         shipNames[i],
         shipLengths[i],
       );
+
       if (result === false) {
         i--;
       }
     }
+    setTimeout(() => {
+      domElements.clearText(domElements.alert);
+    }, 2000);
+    setTimeout(() => {
+      domElements.animateText(alert, domElements.alert);
+    }, 2000);
     domElements.renderBlankBoard(this.activeGameboard);
     for (let i = 0; i < shipLengths.length; i++) {
       domElements.clearText(domElements.message);
@@ -105,7 +111,7 @@ export const gameFlow = {
   },
 
   endGame() {
-    domElements.alert.textContent = '';
+    domElements.clearText(domElements.alert);
     domElements.turnButton.classList.remove('switch-button');
     domElements.turnButton.classList.remove('begin-button');
     domElements.turnButton.classList.add('new-game-button');
