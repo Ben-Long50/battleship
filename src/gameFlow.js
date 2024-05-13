@@ -156,20 +156,7 @@ export const gameFlow = {
 
   displayBoards() {
     if (this.activePlayer.name === 'Computer') {
-      const player = this.inactivePlayer;
-      const row = Math.floor(Math.random() * 10);
-      const column = Math.floor(Math.random() * 10);
-      let message = player.gameboard.receiveAttack(row, column);
-      player.gameboard.checkSunk();
-      domElements.clearText(domElements.alert);
-      domElements.animateText(message, domElements.alert);
-      domElements.renderOpponent(player, this.inactiveGameboard);
-      domElements.renderTurnButton('switch-button', 'Switch Turn');
-      if (player.gameboard.checkFleet() === true) {
-        message = gameFlow.endGame();
-        domElements.clearText(domElements.message);
-        domElements.animateText(message, domElements.message);
-      }
+      this.computerAttack(this.inactivePlayer, this.inactiveGameboard);
     } else {
       domElements.renderOpponent(this.inactivePlayer, this.inactiveGameboard);
       eventListeners.activateCoords(
@@ -194,6 +181,75 @@ export const gameFlow = {
       `${this.activePlayer.name}'s turn`,
       domElements.message,
     );
+  },
+
+  computerCoordChoice() {
+    const boardCoords = Array.from(
+      this.inactiveGameboard.querySelectorAll('.coordinate'),
+    );
+    const adjacentToHit = boardCoords.map((element, index) => {
+      if (element.classList.contains('hit')) {
+        return [index - 10, index + 1, index + 10, index - 1];
+      }
+    });
+    const viableOptions = adjacentToHit.map((element) => {
+      const options = [];
+      if (element !== undefined) {
+        for (let i = 0; i < element.length; i++) {
+          if (
+            element[i] >= 0 &&
+            element[i] <= 99 &&
+            !boardCoords[element[i]].classList.contains('hit') &&
+            !boardCoords[element[i]].classList.contains('miss')
+          ) {
+            options.push(element[i]);
+          }
+        }
+      }
+      return options;
+    });
+    const optionsArray = viableOptions.reduce(
+      (acc, curr) => acc.concat(curr),
+      [],
+    );
+    const selectedCoord =
+      optionsArray[Math.floor(Math.random() * optionsArray.length)];
+    console.log(selectedCoord);
+
+    if (selectedCoord === 0) {
+      return [0, 0];
+    }
+
+    const row = selectedCoord
+      ? Math.floor(selectedCoord / 10).toString()
+      : Math.floor(Math.random() * 10).toString();
+    const column = selectedCoord
+      ? (selectedCoord % 10).toString()
+      : Math.floor(Math.random() * 10).toString();
+    const index = parseInt(row + column);
+
+    if (
+      !boardCoords[index].classList.contains('hit') &&
+      !boardCoords[index].classList.contains('miss')
+    ) {
+      return [parseInt(row), parseInt(column)];
+    }
+    return this.computerCoordChoice();
+  },
+
+  computerAttack(player) {
+    const [row, column] = this.computerCoordChoice();
+    let message = player.gameboard.receiveAttack(row, column);
+    player.gameboard.checkSunk();
+    domElements.clearText(domElements.alert);
+    domElements.animateText(message, domElements.alert);
+    domElements.renderOpponent(player, this.inactiveGameboard);
+    domElements.renderTurnButton('switch-button', 'Switch Turn');
+    if (player.gameboard.checkFleet() === true) {
+      message = gameFlow.endGame();
+      domElements.clearText(domElements.message);
+      domElements.animateText(message, domElements.message);
+    }
   },
 
   endGame() {
