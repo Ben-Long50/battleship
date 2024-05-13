@@ -35,7 +35,9 @@ footer {
 }
 
 dialog {
+  background-color: var(--background-color);
   border-radius: 10px;
+  border: solid var(--text-color) 0.75px;
 }
 
 dialog::backdrop {
@@ -43,15 +45,19 @@ dialog::backdrop {
   backdrop-filter: blur(12px);
 }
 
+input {
+  font-size: 40px;
+  font-family: 'digital-italic';
+  color: var(--text-color);
+  background-color: var(--background-color);
+  border: solid var(--text-color) 0.75px;
+  border-radius: 8px;
+}
+
 .dialog-button-container {
   display: flex;
   justify-content: center;
   gap: 5%;
-}
-
-.mode-button {
-  font-size: 24px;
-  border-radius: 5px;
 }
 
 #single-input-container {
@@ -65,6 +71,9 @@ dialog::backdrop {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  font-size: 40px;
+  font-family: 'digital-italic';
+  color: var(--text-color);
 }
 
 #dual-input-container {
@@ -125,7 +134,7 @@ dialog::backdrop {
   place-items: center;
 }
 
-#turn-button {
+button {
   font-family: 'digital';
   color: var(--text-color);
   font-size: 40px;
@@ -136,7 +145,7 @@ dialog::backdrop {
   padding: 8px;
 }
 
-#turn-button:hover {
+button:hover {
   background-color: var(--hover-color);
 }
 
