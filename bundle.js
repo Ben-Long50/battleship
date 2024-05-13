@@ -329,7 +329,28 @@ var gameFlow = {
   },
   computerCoordChoice: function computerCoordChoice() {
     var boardCoords = Array.from(this.inactiveGameboard.querySelectorAll('.coordinate'));
+    var sunkCoords = [];
+    this.inactivePlayer.gameboard.sunkShips.forEach(function (ship) {
+      for (var i = 0; i < ship.length; i++) {
+        var coord = ship.coordinates[i].reduce(function (acc, curr) {
+          return acc.toString().concat(curr.toString());
+        });
+        sunkCoords.push(parseInt(coord));
+      }
+    });
+    var remainingShipCoords = [];
+    this.inactivePlayer.gameboard.shipList.forEach(function (ship) {
+      for (var i = 0; i < ship.length; i++) {
+        var coord = ship.coordinates[i].reduce(function (acc, curr) {
+          return acc.toString().concat(curr.toString());
+        });
+        remainingShipCoords.push(parseInt(coord));
+      }
+    });
     var adjacentToHit = boardCoords.map(function (element, index) {
+      if (sunkCoords.includes(index) && !remainingShipCoords.includes(index)) {
+        return undefined;
+      }
       if (element.classList.contains('hit')) {
         return [index - 10, index + 1, index + 10, index - 1];
       }
@@ -348,8 +369,12 @@ var gameFlow = {
     var optionsArray = viableOptions.reduce(function (acc, curr) {
       return acc.concat(curr);
     }, []);
+    optionsArray.forEach(function (option, index) {
+      if (sunkCoords.includes(option)) {
+        optionsArray.splice(index, 0);
+      }
+    });
     var selectedCoord = optionsArray[Math.floor(Math.random() * optionsArray.length)];
-    console.log(selectedCoord);
     if (selectedCoord === 0) {
       return [0, 0];
     }
@@ -509,9 +534,8 @@ var Gameboard = /*#__PURE__*/function () {
       this.shipList.forEach(function (ship, index) {
         if (ship.sunk === true) {
           var sunkShip = _this2.shipList.splice(index, 1);
-          console.log(sunkShip);
           _renderDom__WEBPACK_IMPORTED_MODULE_2__.domElements.renderSunkShip(_gameFlow__WEBPACK_IMPORTED_MODULE_1__.gameFlow.activeList, sunkShip[0].name, sunkShip[0].length);
-          _this2.sunkShips.push(sunkShip);
+          _this2.sunkShips.push(sunkShip[0]);
         }
       });
     }
@@ -638,6 +662,7 @@ var domElements = {
   },
   renderSunkShip: function renderSunkShip(list, name, length) {
     var sunkShip = document.createElement('div');
+    sunkShip.classList.add('sunk-ship');
     sunkShip.textContent = "".concat(name, " (").concat(length, ")");
     list.appendChild(sunkShip);
   },
@@ -891,21 +916,26 @@ body {
   width: 100vw;
   display: flex;
   flex-direction: column;
+  gap: 3%;
   background-color: rgb(44, 44, 44);
 }
 
-#title {
-  font-family: 'digital-italic';
-  color: var(--text-color);
-  letter-spacing: 10px;
-}
-
-header,
+#header,
 #footer {
+  padding-top: 10px;
+  padding-bottom: 10px;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#header {
+  font-family: 'digital-italic';
+  color: var(--text-color);
+  letter-spacing: 10px;
+  background-color: var(--background-color);
+  border-bottom: solid var(--text-color) 0.75px;
 }
 
 #footer {
@@ -913,7 +943,8 @@ header,
   font-family: 'digital';
   color: var(--text-color);
   text-align: center;
-  font-size: 28px;
+  font-size: 32px;
+  letter-spacing: 5px;
   background-color: var(--background-color);
   border-top: solid var(--text-color) 0.75px;
 }
@@ -989,8 +1020,8 @@ input {
   font-family: 'digital';
   color: var(--text-color);
   font-size: 40px;
-  padding-left: 8%;
-  padding-right: 8%;
+  /* padding-left: 8%; */
+  /* padding-right: 8%; */
   display: grid;
   justify-items: center;
   /* align-items: center; */
@@ -1127,7 +1158,13 @@ button:hover {
 .miss {
   background-color: rgb(133, 133, 255);
 }
-`, "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"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","sourcesContent":["@font-face {\n  font-family: 'digital';\n  src: url('../assets/digital.ttf') format('truetype');\n}\n\n@font-face {\n  font-family: 'digital-italic';\n  src: url('../assets/digital-italic.ttf') format('truetype');\n}\n\nbody {\n  --text-color: rgb(0, 133, 0);\n  --background-color: rgba(0, 75, 0, 0.3);\n  --hover-color: rgba(255, 255, 255, 0.37);\n  height: 100vh;\n  width: 100vw;\n  display: flex;\n  flex-direction: column;\n  background-color: rgb(44, 44, 44);\n}\n\n#title {\n  font-family: 'digital-italic';\n  color: var(--text-color);\n  letter-spacing: 10px;\n}\n\nheader,\n#footer {\n  width: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n#footer {\n  margin-top: auto;\n  font-family: 'digital';\n  color: var(--text-color);\n  text-align: center;\n  font-size: 28px;\n  background-color: var(--background-color);\n  border-top: solid var(--text-color) 0.75px;\n}\n\ndialog {\n  background-color: var(--background-color);\n  border-radius: 10px;\n  border: solid var(--text-color) 0.75px;\n}\n\ndialog::backdrop {\n  background-color: rgba(0, 0, 0, 0.7);\n  backdrop-filter: blur(12px);\n}\n\ninput {\n  font-size: 40px;\n  font-family: 'digital-italic';\n  color: var(--text-color);\n  background-color: var(--background-color);\n  border: solid var(--text-color) 0.75px;\n  border-radius: 8px;\n}\n\n.dialog-button-container {\n  display: flex;\n  justify-content: center;\n  gap: 5%;\n}\n\n#single-input-container {\n  display: grid;\n  grid-template-columns: repeat(1, 1fr);\n  gap: 20px;\n}\n\n#pvp-dialog-container,\n#pvc-dialog-container {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  font-size: 40px;\n  font-family: 'digital-italic';\n  color: var(--text-color);\n}\n\n#dual-input-container {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 20px;\n}\n\n#pvp-start-button {\n  width: 100%;\n}\n\n#title {\n  font-size: 100px;\n  text-align: center;\n}\n\n.gameboard-ui-container {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  font-size: 40px;\n  text-align: center;\n  font-family: 'digital-italic';\n  color: var(--text-color);\n}\n\n#gameboard-container {\n  font-family: 'digital';\n  color: var(--text-color);\n  font-size: 40px;\n  padding-left: 8%;\n  padding-right: 8%;\n  display: grid;\n  justify-items: center;\n  /* align-items: center; */\n  grid-template-columns: auto 25% auto;\n  grid-template-rows: repeat(3, auto);\n  gap: 26px;\n}\n\n#player1-title {\n  grid-column: 1 / 2;\n  grid-row: 1 / 2;\n}\n\n#player2-title {\n  grid-column: 3 / 4;\n  grid-row: 1 / 2;\n}\n\n#gameboard-one {\n  grid-column: 1 / 2;\n  grid-row: 2 / 3;\n}\n\n#gameboard-two {\n  grid-column: 3 / 4;\n  grid-row: 2 / 3;\n}\n\n#ui-container {\n  grid-row: 2 / 3;\n  grid-column: 2 / 3;\n  font-family: 'digital';\n  color: var(--text-color);\n  box-sizing: border-box;\n  height: 100%;\n  width: 100%;\n  display: grid;\n  grid-template-columns: 1;\n  grid-template-rows: 1fr 1fr auto;\n  /* padding-left: 5%;\n  padding-right: 5%; */\n}\n\n#message-container,\n#alert-container {\n  border-radius: 10px;\n  border: solid var(--text-color) 0.75px;\n  background-color: var(--background-color);\n  padding: 8px;\n}\n\n#message-container {\n  text-align: left;\n  font-size: 40px;\n}\n\n#alert-container {\n  text-align: left;\n  font-size: 48px;\n}\n\n#button-container {\n  display: grid;\n  place-items: center;\n}\n\n#player1-sunk-ships,\n#player2-sunk-ships {\n  width: 100%;\n  box-sizing: border-box;\n  padding-left: 50px;\n  text-align: left;\n}\n\n#player1-sunk-ships {\n  grid-column: 1 / 2;\n  grid-row: 3 / 4;\n}\n\n#player2-sunk-ships {\n  grid-column: 3 / 4;\n  grid-row: 3 / 4;\n}\n\n#turn-button {\n  font-size: 50px;\n  width: 100%;\n}\n\nbutton {\n  font-family: 'digital';\n  color: var(--text-color);\n  font-size: 40px;\n  text-align: center;\n  border-radius: 10px;\n  border: solid var(--text-color) 0.75px;\n  background-color: var(--background-color);\n  padding: 8px;\n}\n\nbutton:hover {\n  background-color: var(--hover-color);\n}\n\n.gameboard {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  gap: 2.5px;\n}\n\n.coordinate {\n  height: 5vh;\n  width: 5vh;\n  border: solid var(--text-color) 0.75px;\n  background-color: var(--background-color);\n  display: grid;\n  place-items: center;\n  font-size: 30px;\n  border-radius: 5px;\n}\n\n.active-coord:hover {\n  background-color: var(--hover-color);\n}\n\n.ship {\n  background-color: rgb(113, 197, 113);\n}\n\n.hit {\n  background-color: rgb(255, 129, 129);\n}\n\n.miss {\n  background-color: rgb(133, 133, 255);\n}\n"],"sourceRoot":""}]);
+
+.sunk-ship {
+  background-color: var(--background-color);
+  border-radius: 10px;
+  border: solid var(--text-color) 0.75px;
+}
+`, "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"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","sourcesContent":["@font-face {\n  font-family: 'digital';\n  src: url('../assets/digital.ttf') format('truetype');\n}\n\n@font-face {\n  font-family: 'digital-italic';\n  src: url('../assets/digital-italic.ttf') format('truetype');\n}\n\nbody {\n  --text-color: rgb(0, 133, 0);\n  --background-color: rgba(0, 75, 0, 0.3);\n  --hover-color: rgba(255, 255, 255, 0.37);\n  height: 100vh;\n  width: 100vw;\n  display: flex;\n  flex-direction: column;\n  gap: 3%;\n  background-color: rgb(44, 44, 44);\n}\n\n#header,\n#footer {\n  padding-top: 10px;\n  padding-bottom: 10px;\n  width: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n#header {\n  font-family: 'digital-italic';\n  color: var(--text-color);\n  letter-spacing: 10px;\n  background-color: var(--background-color);\n  border-bottom: solid var(--text-color) 0.75px;\n}\n\n#footer {\n  margin-top: auto;\n  font-family: 'digital';\n  color: var(--text-color);\n  text-align: center;\n  font-size: 32px;\n  letter-spacing: 5px;\n  background-color: var(--background-color);\n  border-top: solid var(--text-color) 0.75px;\n}\n\ndialog {\n  background-color: var(--background-color);\n  border-radius: 10px;\n  border: solid var(--text-color) 0.75px;\n}\n\ndialog::backdrop {\n  background-color: rgba(0, 0, 0, 0.7);\n  backdrop-filter: blur(12px);\n}\n\ninput {\n  font-size: 40px;\n  font-family: 'digital-italic';\n  color: var(--text-color);\n  background-color: var(--background-color);\n  border: solid var(--text-color) 0.75px;\n  border-radius: 8px;\n}\n\n.dialog-button-container {\n  display: flex;\n  justify-content: center;\n  gap: 5%;\n}\n\n#single-input-container {\n  display: grid;\n  grid-template-columns: repeat(1, 1fr);\n  gap: 20px;\n}\n\n#pvp-dialog-container,\n#pvc-dialog-container {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  font-size: 40px;\n  font-family: 'digital-italic';\n  color: var(--text-color);\n}\n\n#dual-input-container {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 20px;\n}\n\n#pvp-start-button {\n  width: 100%;\n}\n\n#title {\n  font-size: 100px;\n  text-align: center;\n}\n\n.gameboard-ui-container {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  font-size: 40px;\n  text-align: center;\n  font-family: 'digital-italic';\n  color: var(--text-color);\n}\n\n#gameboard-container {\n  font-family: 'digital';\n  color: var(--text-color);\n  font-size: 40px;\n  /* padding-left: 8%; */\n  /* padding-right: 8%; */\n  display: grid;\n  justify-items: center;\n  /* align-items: center; */\n  grid-template-columns: auto 25% auto;\n  grid-template-rows: repeat(3, auto);\n  gap: 26px;\n}\n\n#player1-title {\n  grid-column: 1 / 2;\n  grid-row: 1 / 2;\n}\n\n#player2-title {\n  grid-column: 3 / 4;\n  grid-row: 1 / 2;\n}\n\n#gameboard-one {\n  grid-column: 1 / 2;\n  grid-row: 2 / 3;\n}\n\n#gameboard-two {\n  grid-column: 3 / 4;\n  grid-row: 2 / 3;\n}\n\n#ui-container {\n  grid-row: 2 / 3;\n  grid-column: 2 / 3;\n  font-family: 'digital';\n  color: var(--text-color);\n  box-sizing: border-box;\n  height: 100%;\n  width: 100%;\n  display: grid;\n  grid-template-columns: 1;\n  grid-template-rows: 1fr 1fr auto;\n  /* padding-left: 5%;\n  padding-right: 5%; */\n}\n\n#message-container,\n#alert-container {\n  border-radius: 10px;\n  border: solid var(--text-color) 0.75px;\n  background-color: var(--background-color);\n  padding: 8px;\n}\n\n#message-container {\n  text-align: left;\n  font-size: 40px;\n}\n\n#alert-container {\n  text-align: left;\n  font-size: 48px;\n}\n\n#button-container {\n  display: grid;\n  place-items: center;\n}\n\n#player1-sunk-ships,\n#player2-sunk-ships {\n  width: 100%;\n  box-sizing: border-box;\n  padding-left: 50px;\n  text-align: left;\n}\n\n#player1-sunk-ships {\n  grid-column: 1 / 2;\n  grid-row: 3 / 4;\n}\n\n#player2-sunk-ships {\n  grid-column: 3 / 4;\n  grid-row: 3 / 4;\n}\n\n#turn-button {\n  font-size: 50px;\n  width: 100%;\n}\n\nbutton {\n  font-family: 'digital';\n  color: var(--text-color);\n  font-size: 40px;\n  text-align: center;\n  border-radius: 10px;\n  border: solid var(--text-color) 0.75px;\n  background-color: var(--background-color);\n  padding: 8px;\n}\n\nbutton:hover {\n  background-color: var(--hover-color);\n}\n\n.gameboard {\n  display: grid;\n  grid-template-columns: repeat(10, 1fr);\n  gap: 2.5px;\n}\n\n.coordinate {\n  height: 5vh;\n  width: 5vh;\n  border: solid var(--text-color) 0.75px;\n  background-color: var(--background-color);\n  display: grid;\n  place-items: center;\n  font-size: 30px;\n  border-radius: 5px;\n}\n\n.active-coord:hover {\n  background-color: var(--hover-color);\n}\n\n.ship {\n  background-color: rgb(113, 197, 113);\n}\n\n.hit {\n  background-color: rgb(255, 129, 129);\n}\n\n.miss {\n  background-color: rgb(133, 133, 255);\n}\n\n.sunk-ship {\n  background-color: var(--background-color);\n  border-radius: 10px;\n  border: solid var(--text-color) 0.75px;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
